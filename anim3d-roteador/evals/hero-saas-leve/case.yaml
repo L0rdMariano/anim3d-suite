@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: hero-saas-leve
+expected_outcome: |
+  Gera hero em que título/CTA renderizam sem esperar WebGL; cena React Three Fiber carregada por import() dinâmico perto da viewport; fallback/poster sem WebGL e para movimento reduzido; cores lidas das variáveis CSS; parallax limitado e desligado em toque; render pausado fora da tela ou frameloop sob demanda; espaço reservado para evitar CLS.

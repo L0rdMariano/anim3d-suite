@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: loader-salvar
+expected_outcome: |
+  Recomenda não usar WebGL/three.js para isso: CSS 3D (transform/perspective) ou feedback no próprio botão, com atraso para não piscar em salvamentos rápidos, respeito a prefers-reduced-motion e status anunciado em texto (aria-live/aria-busy).

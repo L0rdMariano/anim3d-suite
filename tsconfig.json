@@ -1,0 +1,22 @@
+{
+  // Só para desenvolvimento da suíte (editor, typecheck e testes).
+  // Num projeto real, copie kit/src e configure os mesmos aliases (veja anim3d-fundamentos/kit/README.md).
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["vite/client", "node"],
+    "paths": {
+      "@anim3d/kit": ["./anim3d-fundamentos/kit/src/index.ts"],
+      "@anim3d/kit/*": ["./anim3d-fundamentos/kit/src/*"]
+    }
+  },
+  "include": ["anim3d-*/kit/**/*.ts", "anim3d-*/kit/**/*.tsx", "anim3d-*/exemplo/**/*.ts", "anim3d-*/exemplo/**/*.tsx", "demo/**/*.tsx", "demo/vite.config.ts", "vitest.config.ts"]
+}

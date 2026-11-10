@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html lang="pt-BR" data-theme="escuro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Galeria anim3d</title>
+    <style>
+      :root {
+        --cor-primaria: #4f46e5; --cor-destaque: #ea580c; --cor-sucesso: #16a34a; --cor-globo: #e0e7ff;
+        --cor-plataforma: #e2e8f0; --cor-bloco: #cbd5e1; --cor-cabo: #94a3b8; --cor-superficie: #e5e7eb; --cor-rack: #3b5bdb;
+        --fundo: #eef1f7; --superficie: #ffffff; --texto: #0f172a; --suave: #64748b; --borda: #dde3ee; --cartao-fundo: rgba(255,255,255,.95);
+      }
+      :root[data-theme='escuro'] {
+        --cor-primaria: #818cf8; --cor-destaque: #fb923c; --cor-sucesso: #4ade80; --cor-globo: #0f1630;
+        --cor-plataforma: #161b2e; --cor-bloco: #2a3150; --cor-cabo: #3b4470; --cor-superficie: #1f2937; --cor-rack: #3b5bdb;
+        --fundo: #070a14; --superficie: #0d1222; --texto: #e5e7eb; --suave: #94a3b8; --borda: #1f2740; --cartao-fundo: rgba(12,16,32,.92);
+      }
+      html, body { margin: 0; height: 100%; background: var(--fundo); }
+    </style>
+  </head>
+  <body>
+    <script>
+      // Só na demo: por padrão ignora o "reduzir movimento" do sistema (Windows Server/VMs vêm com ele ligado e
+      // a galeria mostraria só as versões estáticas). Use ?respeitar=1 para testar o comportamento real.
+      if (!new URLSearchParams(location.search).has('respeitar')) {
+        const original = window.matchMedia.bind(window);
+        window.matchMedia = (q) => original(q.includes('prefers-reduced-motion: reduce') ? '(max-width: 0px)' : q);
+      }
+    </script>
+    <div id="root"></div>
+    <script type="module" src="./galeria.tsx"></script>
+  </body>
+</html>
