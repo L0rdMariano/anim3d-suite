@@ -54,7 +54,7 @@ Ela tem três camadas:
 Requisito: **Node.js 22+**.
 
 ```bash
-git clone <url-deste-repositório> anim3d-suite
+git clone https://github.com/L0rdMariano/anim3d-suite.git anim3d-suite
 cd anim3d-suite
 npm install
 npm run demo          # abre http://localhost:5180/
