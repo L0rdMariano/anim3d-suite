@@ -34,9 +34,9 @@ Motor testado: `motor/rf.ts`. Parede e andar vêm de `anim3d-infra-fisica`. Exem
 - **Parede invisível sobre o mapa.** Linha fina da cor do material some sobre o verde do mapa; desenhe um contorno escuro por baixo e faça a espessura crescer com a perda do material.
 - **Números fixos de material.** `PERDA_MATERIAL` são valores de planejamento. Medição no local manda; deixe a tabela editável na interface.
 
-## Origem dos números (sem fonte primária registrada)
+## Origem dos números
 
-`PERDA_MATERIAL`, `PERDA_LAJE`, o expoente 3 e os limiares −67/−75/−85 dBm são valores de partida usuais de planejamento, **não** extraídos de uma norma ou datasheet citável aqui. Antes de usar em proposta, confirme com o fabricante do AP ou com um site survey; a tabela é editável por isso.
+Detalhe, fontes e confiança em [`references/fontes.md`](references/fontes.md). Resumo: **−67 dBm** tem respaldo em guias de site survey de fabricante; **−75/−85 dBm** e os valores de material são de partida, sem norma (tijolo está abaixo das faixas publicadas); e o expoente 3 somado às paredes explícitas pode contar a obstrução duas vezes (mapa pessimista). Use o mapa para **comparar** posições e bandas, e calibre com site survey antes de uma proposta.
 
 ## Limites (diga ao usuário)
 

@@ -11,6 +11,7 @@ import { CentroComando3D } from '../anim3d-mapas/exemplo/CentroComando3D';
 import { Topologia } from '../anim3d-topologia/exemplo/Topologia';
 import { RackEmpresa } from '../anim3d-infra-fisica/exemplo/RackEmpresa';
 import { CoberturaWifi } from '../anim3d-wifi-rf/exemplo/CoberturaWifi';
+import { DescobertaRede } from '../anim3d-rede-logica/exemplo/DescobertaRede';
 import { ComparaMolas } from '../anim3d-motion/exemplo/ComparaMolas';
 import { Celular3D } from '../anim3d-mobile/exemplo/Celular3D';
 import { MicroInteracoes } from '../anim3d-app-ui/exemplo/MicroInteracoes';
@@ -243,6 +244,35 @@ resumo.bom; // fração da área com ≥ −67 dBm`,
     palco: () => (
       <div style={{ width: '100%' }}>
         <CoberturaWifi />
+      </div>
+    ),
+  },
+  {
+    id: 'rede-descoberta',
+    grupo: 'Redes',
+    icone: '⇄',
+    titulo: 'Descoberta e queda na rede da empresa',
+    resumo: 'Topologia lógica derivada dos cabos do rack',
+    descricao:
+      'A rede lógica da empresa do exemplo do rack, derivada dos cabos físicos: tomadas e patch panels somem e cada estação liga direto ao switch. A descoberta parte do switch de núcleo e revela o equipamento em ondas. Desligue o SW-ACC2 e a descoberta refeita já não enxerga o 3º andar, exatamente o que o motor de impacto acusa; selecione uma estação para ver o pacote até o servidor de arquivos e, se houver queda, onde e por que ele para.',
+    tecnicas: ['topologia lógica derivada da física', 'passivos atravessados pela mesma porta', 'BFS em ondas que respeita dispositivo desligado', 'impacto de falha por sala', 'rastreio de pacote com motivo', 'SVG com teclado por dispositivo', 'tokens CSS no SVG'],
+    destaques: ['O diagrama não é desenhado à mão: sai dos cabos', 'A descoberta e o impacto de falha concordam (teste)', 'Texto de motivo do descarte, não só animação', 'Movimento reduzido: tudo descoberto de uma vez'],
+    metricas: [['23', 'equipamentos descobertos'], ['2', 'ondas após a semente'], ['6', 'equipamentos desligáveis'], ['14', 'testes (motor e exemplo)']],
+    skill: 'anim3d-rede-logica',
+    arquivos: ['anim3d-rede-logica/exemplo/DescobertaRede.tsx', 'anim3d-rede-logica/exemplo/redeExemplo.ts', 'anim3d-rede-logica/exemplo/descobertaRede.css', 'anim3d-rede-logica/motor/redeLogica.ts'],
+    uso: `import { DescobertaRede } from './DescobertaRede';
+import { redeDaEmpresa, comDesligado, SEMENTE } from './redeExemplo';
+import { ordemDeDescoberta } from '../motor/redeLogica';
+
+<DescobertaRede />
+
+// só o motor (sem tela)
+const { topo } = redeDaEmpresa();
+ordemDeDescoberta(comDesligado(topo, 'acc2'), SEMENTE); // sem o 3º andar`,
+    prop: 1.5,
+    palco: () => (
+      <div style={{ width: '100%' }}>
+        <DescobertaRede />
       </div>
     ),
   },

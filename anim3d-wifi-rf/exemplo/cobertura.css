@@ -1,11 +1,11 @@
-/* Exemplo anim3d-wifi-rf: cobertura Wi-Fi em planta. Cores por variáveis --cw-* (o canvas lê as mesmas via useTokens). */
+/* Exemplo anim3d-wifi-rf: cobertura Wi-Fi em planta (estilo corporativo de site survey). */
 .cw-raiz {
   --cw-texto: #cdeffb;
-  --cw-suave: #7fa6b8;
-  --cw-linha: rgba(34, 211, 238, 0.26);
-  --cw-painel: rgba(6, 16, 26, 0.94);
-  --cw-destaque: #22d3ee;
-  --cw-aviso: #ffd23f;
+  --cw-suave: #64748b;
+  --cw-linha: rgba(6, 182, 212, 0.28);
+  --cw-painel: rgba(9, 15, 26, 0.94);
+  --cw-destaque: #06b6d4;
+  --cw-aviso: #f59e0b;
   container-type: inline-size;
   height: 100%;
   min-height: 460px;
@@ -13,7 +13,7 @@
   box-sizing: border-box;
   color: var(--cw-texto);
   font: 500 12px/1.45 ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
-  background: radial-gradient(ellipse at 35% 30%, #0c2438 0%, #050d17 70%);
+  background: radial-gradient(ellipse at 40% 35%, #0b1f33 0%, #050d17 65%, #02060b 100%);
   border-radius: 12px;
   box-shadow: inset 0 0 0 1px var(--cw-linha);
 }

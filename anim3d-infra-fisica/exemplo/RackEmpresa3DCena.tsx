@@ -27,9 +27,9 @@ export interface PropsRack3D {
   aoSelecionar: (id: string) => void;
 }
 
-// Cores por tokens (variáveis CSS --ri-*); o padrão cobre testes e temas sem as variáveis.
+// Cores por tokens (variáveis CSS --ri-*); o padrão cobre testes e temas sem as variáveis com estética corporativa de Datacenter/NOC.
 const MAPA = { chassi: '--ri-chassi', painel: '--ri-painel-3d', ok: '--ri-ok', erro: '--ri-erro', aviso: '--ri-aviso', destaque: '--ri-destaque', livre: '--ri-livre', calha: '--ri-calha', piso: '--ri-piso', andar: '--ri-andar', cabo: '--ri-cabo', rede: '--ri-rede', servidor: '--ri-servidor', passivo: '--ri-passivo', luzCeu: '--ri-luz-ceu', luzChao: '--ri-luz-chao', luzRecorte: '--ri-luz-recorte' } as const;
-const PADRAO: Record<keyof typeof MAPA, string> = { chassi: '#2b3a4b', painel: '#4a627a', ok: '#3ddc97', erro: '#ff4d6d', aviso: '#ffd23f', destaque: '#22d3ee', livre: '#0b1219', calha: '#7d8b99', piso: '#0a141d', andar: '#27465e', cabo: '#4a6a82', rede: '#2c6a8c', servidor: '#43486e', passivo: '#7b8a99', luzCeu: '#dff6ff', luzChao: '#0b141c', luzRecorte: '#7dd3fc' };
+const PADRAO: Record<keyof typeof MAPA, string> = { chassi: '#182433', painel: '#334155', ok: '#10b981', erro: '#ef4444', aviso: '#f59e0b', destaque: '#06b6d4', livre: '#090f17', calha: '#64748b', piso: '#09101d', andar: '#1e293b', cabo: '#0284c7', rede: '#0ea5e9', servidor: '#6366f1', passivo: '#475569', luzCeu: '#f8fafc', luzChao: '#020617', luzRecorte: '#38bdf8' };
 type Paleta = Record<keyof typeof MAPA, string>;
 
 const COR_TIPO: Record<TipoEquip, keyof Paleta> = { switch: 'rede', roteador: 'rede', firewall: 'rede', servidor: 'servidor', ups: 'chassi', 'patch-panel': 'passivo', ap: 'chassi', pc: 'chassi', tomada: 'passivo' };
@@ -105,13 +105,19 @@ function Equipamento3D({ modelo, id, cor, p, desligado, marcado, selecionado, ao
       position={[0, y, RACK_FRENTE - prof / 2]}
       onClick={(ev: ThreeEvent<MouseEvent>) => { if (ev.delta < 6) { ev.stopPropagation(); aoSelecionar(id); } }}
     >
-      <mesh>
+      <mesh castShadow receiveShadow>
         <boxGeometry args={[LARGURA_19, h, prof]} />
-        <meshStandardMaterial color={cor} roughness={0.55} metalness={0.12} transparent={desligado} opacity={desligado ? 0.35 : 1} emissive={alerta ?? '#000000'} emissiveIntensity={alerta ? 0.5 : 0} />
+        <meshStandardMaterial color={cor} roughness={0.48} metalness={0.22} transparent={desligado} opacity={desligado ? 0.35 : 1} emissive={alerta ?? '#000000'} emissiveIntensity={alerta ? 0.6 : 0} />
       </mesh>
+      {/* Moldura frontal chanfrada de rack técnico */}
       <mesh position={[0, 0, prof / 2 + 0.002]}>
-        <boxGeometry args={[LARGURA_19 - 0.02, h * 0.72, 0.004]} />
-        <meshStandardMaterial color={e.tipo === 'patch-panel' ? p.calha : p.painel} roughness={0.7} metalness={0.1} transparent={desligado} opacity={desligado ? 0.3 : 1} />
+        <boxGeometry args={[LARGURA_19 - 0.015, h * 0.76, 0.004]} />
+        <meshStandardMaterial color={e.tipo === 'patch-panel' ? p.calha : p.painel} roughness={0.65} metalness={0.18} transparent={desligado} opacity={desligado ? 0.3 : 1} />
+      </mesh>
+      {/* Friso luminoso sutil de identificação do equipamento */}
+      <mesh position={[-LARGURA_19 / 2 + 0.02, 0, prof / 2 + 0.005]}>
+        <boxGeometry args={[0.012, h * 0.5, 0.003]} />
+        <meshBasicMaterial color={alerta ?? (desligado ? p.livre : cor)} toneMapped={false} />
       </mesh>
     </group>
   );
@@ -386,17 +392,21 @@ export default function RackEmpresa3DCena(props: PropsRack3D & PropsCena) {
 
   return (
     <div className="ri-cena">
-      <Canvas frameloop="always" dpr={nivel >= 2 ? 0.75 : nivel >= 1 ? 1 : [1, 2]} camera={{ position: [3, 2, 4], fov: 38, near: 0.05, far: 200 }} gl={{ antialias: true, alpha: true }} style={{ touchAction: 'none' }}>
-        <ambientLight intensity={0.9} />
-        <hemisphereLight args={[p.luzCeu, p.luzChao, 0.8]} />
-        <directionalLight position={[6, 12, 8]} intensity={1.7} />
-        <directionalLight position={[-6, 4, -4]} intensity={0.5} color={p.luzRecorte} />
+      <Canvas frameloop="always" shadows={nivel < 2} dpr={nivel >= 2 ? 0.75 : nivel >= 1 ? 1 : [1, 2]} camera={{ position: [3, 2, 4], fov: 38, near: 0.05, far: 200 }} gl={{ antialias: true, alpha: true }} style={{ touchAction: 'none' }}>
+        <ambientLight intensity={0.85} color="#e2e8f0" />
+        <hemisphereLight args={[p.luzCeu, p.luzChao, 0.75]} />
+        <directionalLight position={[6, 12, 8]} intensity={1.8} castShadow={nivel < 2} shadow-mapSize={[1024, 1024]} shadow-bias={-0.0001} />
+        <directionalLight position={[-6, 4, -4]} intensity={0.65} color={p.luzRecorte} />
         <Camara vista={vista} reduzido={movimentoReduzido} orbita={orbita} />
 
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[vista === 'rack' ? 0 : 11, -0.01, vista === 'rack' ? 0 : 0]}>
-          <circleGeometry args={[vista === 'rack' ? 3 : 30, 48]} />
-          <meshStandardMaterial color={p.piso} roughness={0.9} />
-        </mesh>
+        {/* Piso técnico modular de Datacenter (Sala Cofre / Prédio) */}
+        <group position={[vista === 'rack' ? 0 : 11, -0.015, 0]}>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+            <circleGeometry args={[vista === 'rack' ? 3.6 : 32, 48]} />
+            <meshStandardMaterial color={p.piso} roughness={0.88} metalness={0.15} />
+          </mesh>
+          <gridHelper args={[vista === 'rack' ? 4 : 48, vista === 'rack' ? 10 : 32, '#1e3a5f', '#0f172a']} position={[0, 0.005, 0]} />
+        </group>
 
         {vista === 'rack' ? <Rack3D {...props} p={p} /> : <Predio3D modelo={modelo} p={p} isolados={isolados} salasIsoladas={salasIsoladas} caminho={caminho} selecionado={selecionado} />}
         <TodosOsCabos modelo={modelo} cor={p.cabo} />

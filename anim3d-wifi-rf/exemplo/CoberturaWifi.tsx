@@ -10,9 +10,9 @@ const PX = 32; // pixels internos por metro
 const PASSO_TECLA = 0.5;
 const MAX_APS = 6;
 
-// Cores por tokens (--cw-*); os valores padrão ficam nesta linha PADRAO.
+// Cores por tokens (--cw-*); os valores padrão cobrem testes e paleta de engenharia RF.
 const MAPA = { bom: '--cw-bom', aceitavel: '--cw-aceitavel', fraco: '--cw-fraco', semSinal: '--cw-sem-sinal', fundo: '--cw-fundo', ap: '--cw-ap', texto: '--cw-texto', drywall: '--cw-drywall', vidro: '--cw-vidro', tijolo: '--cw-tijolo', concreto: '--cw-concreto', metal: '--cw-metal' } as const;
-const PADRAO: Record<keyof typeof MAPA, string> = { bom: '#3ddc97', aceitavel: '#b6e36b', fraco: '#f0a53a', semSinal: '#27333f', fundo: '#0a141d', ap: '#22d3ee', texto: '#cdeffb', drywall: '#8aa1b4', vidro: '#7dd3fc', tijolo: '#d98a5f', concreto: '#e6edf3', metal: '#ff6b8a' };
+const PADRAO: Record<keyof typeof MAPA, string> = { bom: '#10b981', aceitavel: '#84cc16', fraco: '#f59e0b', semSinal: '#1e293b', fundo: '#08111e', ap: '#06b6d4', texto: '#cdeffb', drywall: '#94a3b8', vidro: '#38bdf8', tijolo: '#f97316', concreto: '#e2e8f0', metal: '#f43f5e' };
 const ROTULO_NIVEL: Record<Nivel, string> = { bom: 'Bom (≥ −67 dBm)', aceitavel: 'Aceitável (≥ −75)', fraco: 'Fraco (≥ −85)', 'sem-sinal': 'Sem sinal' };
 const MATERIAIS: Material[] = ['drywall', 'vidro', 'tijolo', 'concreto', 'metal'];
 const NOME_MATERIAL: Record<Material, string> = { drywall: 'Drywall', vidro: 'Vidro', tijolo: 'Tijolo', concreto: 'Concreto', metal: 'Metal' };
@@ -71,12 +71,12 @@ export function CoberturaWifi() {
     }
     // frente de onda e APs
     for (const ap of apsDoAndar) {
-      if (onda !== null) {
+      if (onda !== null && onda > 0) {
         g.strokeStyle = cor.ap;
         g.globalAlpha = Math.max(0, 1 - onda / 26);
         g.lineWidth = 2;
         g.beginPath();
-        g.arc(ap.x * PX, ap.y * PX, onda * PX, 0, Math.PI * 2);
+        g.arc(ap.x * PX, ap.y * PX, Math.max(0.1, onda * PX), 0, Math.PI * 2);
         g.stroke();
         g.globalAlpha = 1;
       }

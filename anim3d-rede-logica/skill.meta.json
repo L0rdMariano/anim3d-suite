@@ -4,6 +4,7 @@
   "descricao": "Topologia lógica derivada da física, impacto de falha por sala e descoberta em ondas.",
   "licencas": ["MIT"],
   "dependencias": ["anim3d-infra-fisica", "anim3d-topologia"],
+  "dependenciasExemplo": ["anim3d-fundamentos"],
   "compatibilidade": {
     "claude-code": "a confirmar",
     "codex": "a confirmar",

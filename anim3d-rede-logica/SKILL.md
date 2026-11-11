@@ -7,7 +7,7 @@ description: "Topologia lógica e simulação de falhas derivadas da infraestrut
 
 A rede lógica **não é desenhada: é derivada** dos cabos físicos. Desenhar duas vezes (planta e diagrama) produz os dois fora de sincronia. Este skill liga `anim3d-infra-fisica` ao motor de pacotes de `anim3d-topologia`.
 
-Motor testado: `motor/redeLogica.ts`. O pacote salto a salto continua em `anim3d-topologia/exemplo/topologiaSim.ts` (`tracar`, `melhorRota`).
+Motor testado: `motor/redeLogica.ts`. O pacote salto a salto continua em `anim3d-topologia/exemplo/topologiaSim.ts` (`tracar`, `melhorRota`). Exemplo completo (rede lógica da empresa do rack, descoberta em ondas, queda de equipamento, pacote com motivo): `exemplo/DescobertaRede.tsx` com dados em `exemplo/redeExemplo.ts` (galeria, grupo "Redes").
 
 ## Workflow
 
@@ -31,6 +31,8 @@ Movimento reduzido: estados finais estáticos (rota acesa, salas afetadas pintad
 
 ## Armadilhas medidas
 
+- **Descoberta atravessando equipamento desligado.** A primeira versão de `ordemDeDescoberta` só olhava o enlace: com o SW-ACC2 desligado ela ainda "descobria" as estações atrás dele, contradizendo `impactoDeFalha`. Agora só atravessa dispositivo ligado; o teste do exemplo exige que o que a descoberta não vê seja exatamente o que o impacto acusa.
+- **Layout que cruza o diagrama.** Com os switches de acesso lado a lado, as estações do último ficavam longe dele e as linhas atravessavam tudo. O layout põe o primeiro switch de acesso à esquerda, o último à direita e os servidores no meio (`layout` em `exemplo/redeExemplo.ts`).
 - **Passivo virando nó.** Se o patch panel aparecer como dispositivo, todo caminho ganha um salto falso e `tracar` mostra "pc → patch panel → switch". O teste de `gerarTopologiaLogica` garante que o PC liga direto no switch.
 - **Porta errada no patch panel.** Cabo na porta 7 da frente e porta 8 do fundo não fecha o enlace. O motor **não inventa** a ligação: o PC fica isolado, que é o que acontece de verdade e o que o usuário precisa descobrir (teste cobre).
 - **Sala só "parcialmente" afetada.** Uma sala com um PC ligado a outro switch continua com rede. Reporte `salasAfetadas` e `salasTotalmenteIsoladas` separadas; pintar a sala inteira por um PC sem conexão exagera o impacto.
@@ -57,3 +59,4 @@ Isto é um motor próprio de **conectividade lógica**. Não executa o sistema o
 
 - VLAN e segmentos (hoje não modelados).
 - Importar topologia real (descoberta por inventário) e comparar com `diferencaComRealidade`.
+- Vista 3D da descoberta (hoje o exemplo é um diagrama SVG 2D, de propósito: 23 nós leem melhor assim).

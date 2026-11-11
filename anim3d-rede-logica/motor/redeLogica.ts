@@ -64,15 +64,20 @@ export function impactoDeFalha(t: Topologia, falho: string, ancora: string, sala
   return { semConexao, salasAfetadas, salasTotalmenteIsoladas };
 }
 
-/** Ordem de descoberta por ondas (BFS a partir de uma semente): alimenta a animação "Network Discovery". */
+/**
+ * Ordem de descoberta por ondas (BFS a partir de uma semente): alimenta a animação "Network Discovery".
+ * Só atravessa enlaces ativos e dispositivos ligados: o que está atrás de um switch caído NÃO é descoberto.
+ */
 export function ordemDeDescoberta(t: Topologia, semente: string): { id: string; via: string | null; onda: number }[] {
+  const ligado = (id: string) => t.disps.find((d) => d.id === id)?.ligado === true;
+  if (!ligado(semente)) return [];
   const saida: { id: string; via: string | null; onda: number }[] = [{ id: semente, via: null, onda: 0 }];
   const visto = new Set([semente]);
   for (let i = 0; i < saida.length; i++) {
     const { id, onda } = saida[i];
     for (const e of t.enlaces) {
       const o = e.a === id ? e.b : e.b === id ? e.a : null;
-      if (o && e.ativo && !visto.has(o)) { visto.add(o); saida.push({ id: o, via: e.id, onda: onda + 1 }); }
+      if (o && e.ativo && ligado(o) && !visto.has(o)) { visto.add(o); saida.push({ id: o, via: e.id, onda: onda + 1 }); }
     }
   }
   return saida;

@@ -43,7 +43,7 @@ export function sinalEm(ap: AP, p: Ponto, paredes: Parede[], banda: Banda, altur
 }
 
 export type Nivel = 'bom' | 'aceitavel' | 'fraco' | 'sem-sinal';
-/** Limiares usuais de projeto: voz/vídeo ≥ -67 dBm; dados ≥ -75; abaixo disso a conexão cai. */
+/** bom ≥ -67 dBm tem respaldo em guias de site survey de fabricante (voz/vídeo). As faixas -75 e -85 são de apresentação, sem fonte primária: ver references/fontes.md. */
 export const nivelDe = (dbm: number): Nivel => (dbm >= -67 ? 'bom' : dbm >= -75 ? 'aceitavel' : dbm >= -85 ? 'fraco' : 'sem-sinal');
 
 export interface Celula { x: number; y: number; dbm: number; nivel: Nivel; ap: string; }

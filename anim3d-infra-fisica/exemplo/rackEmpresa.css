@@ -1,13 +1,13 @@
-/* Exemplo anim3d-infra-fisica: rack de empresa de médio porte. Cores por variáveis --ri-* (a cena 3D lê as mesmas). */
+/* Exemplo anim3d-infra-fisica: rack de empresa de médio porte (padrão corporativo Sala Cofre / NOC). */
 .ri-raiz {
   --ri-texto: #cdeffb;
-  --ri-suave: #7fa6b8;
-  --ri-linha: rgba(34, 211, 238, 0.26);
-  --ri-fundo-painel: rgba(6, 16, 26, 0.94);
-  --ri-ok: #3ddc97;
-  --ri-erro: #ff4d6d;
-  --ri-aviso: #ffd23f;
-  --ri-destaque: #22d3ee;
+  --ri-suave: #64748b;
+  --ri-linha: rgba(6, 182, 212, 0.28);
+  --ri-fundo-painel: rgba(9, 15, 26, 0.94);
+  --ri-ok: #10b981;
+  --ri-erro: #ef4444;
+  --ri-aviso: #f59e0b;
+  --ri-destaque: #06b6d4;
   height: 100%;
   min-height: 520px;
   padding: 10px;
@@ -15,7 +15,7 @@
   container-type: inline-size;
   color: var(--ri-texto);
   font: 500 12px/1.45 ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
-  background: radial-gradient(ellipse at 35% 30%, #0c2438 0%, #050d17 70%);
+  background: radial-gradient(ellipse at 40% 35%, #0b1f33 0%, #050d17 65%, #02060b 100%);
   border-radius: 12px;
   box-shadow: inset 0 0 0 1px var(--ri-linha);
 }
@@ -34,9 +34,23 @@
 .ri-cena { position: relative; width: 100%; height: 100%; }
 .ri-cena canvas { display: block; }
 .ri-rotulos { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.ri-rotulos span { position: absolute; left: 0; top: 0; margin: -7px 0 0 8px; padding: 0 5px; white-space: nowrap; font-size: 10px; line-height: 14px; color: var(--ri-texto); background: rgba(4, 12, 20, 0.82); border: 1px solid var(--ri-linha); border-radius: 3px; }
-.ri-rotulos span.sel { border-color: var(--ri-destaque); color: #fff; }
-.ri-rotulos span.off { color: var(--ri-erro); text-decoration: line-through; }
+.ri-rotulos span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: -7px 0 0 8px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  font-size: 10px;
+  line-height: 15px;
+  color: #f1f5f9;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.ri-rotulos span.sel { border-color: var(--ri-destaque); color: var(--ri-destaque); font-weight: 700; background: rgba(15, 23, 42, 0.96); }
+.ri-rotulos span.off { color: var(--ri-erro); text-decoration: line-through; border-color: var(--ri-erro); }
 .ri-acessivel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: 0; padding: 0; list-style: none; }
 .ri-acessivel:focus-within { width: auto; height: auto; clip-path: none; overflow: visible; inset: auto 8px 8px auto; background: var(--ri-fundo-painel); padding: 6px; max-height: 60%; overflow-y: auto; }
 

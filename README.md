@@ -9,7 +9,8 @@ Com kit de código testado, exemplos que rodam no navegador e verificação auto
 ![three.js 0.187](https://img.shields.io/badge/three.js-0.187-000000?logo=threedotjs&logoColor=white)
 ![React Three Fiber 9](https://img.shields.io/badge/R3F-9-6366f1)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
-![testes](https://img.shields.io/badge/testes-29%20passando-22c55e)
+![testes](https://img.shields.io/badge/testes-147%20passando-22c55e)
+![skills](https://img.shields.io/badge/skills-16%20validadas-06b6d4)
 ![contribuições](https://img.shields.io/badge/contribui%C3%A7%C3%B5es-bem--vindas-f97316)
 
 <img src="docs/img/almoxarifado-visao-geral.png" alt="Almoxarifado 3D: estantes, setores, empilhadeiras, caminhões e painel com gráficos" width="100%" />
@@ -38,6 +39,14 @@ Ela tem três camadas:
 <tr>
 <td width="50%"><img src="docs/img/almoxarifado-posicao.png" alt="Almoxarifado: câmera dentro do corredor com o detalhe da posição" /><br /><b>Almoxarifado 3D</b>: gêmeo digital com recebimento, conferência, armazenagem, separação, embalagem e expedição. Busca leva a câmera até a posição.</td>
 <td width="50%"><img src="docs/img/galeria-ecossistema.png" alt="Ecossistema de dados isométrico" /><br /><b>Ecossistema isométrico</b>: aplicações → API → dados ← ETL ← fontes, com pacotes correndo nos cabos.</td>
+</tr>
+<tr>
+<td><img src="docs/img/galeria-topologia.png" alt="Topologia de rede 3D em piso elevado de datacenter" /><br /><b>Topologia de rede 3D</b>: simulador estilo Packet Tracer em ambiente Sala Cofre/Datacenter com telemetria ao vivo e depuração salto a salto.</td>
+<td><img src="docs/img/galeria-rack.png" alt="Rack corporativo 42 U e prumada predial" /><br /><b>Rack 42 U corporativo</b>: infraestrutura física real, portas RJ45 em InstancedMesh, energia e rota de cabos pela eletrocalha.</td>
+</tr>
+<tr>
+<td><img src="docs/img/galeria-rede-descoberta.png" alt="Descoberta de rede lógica e queda de switch" /><br /><b>Descoberta de rede lógica</b>: topologia lógica derivada dos cabos físicos, algoritmo BFS em ondas e simulação de impacto por sala.</td>
+<td><img src="docs/img/galeria-wifi-cobertura.png" alt="Cobertura Wi-Fi em planta baixa de 3 andares" /><br /><b>Cobertura Wi-Fi RF</b>: mapa de calor com perda log-distância, atenuação real por material de parede e laje (2,4 GHz vs 5 GHz).</td>
 </tr>
 <tr>
 <td><img src="docs/img/galeria-globo.png" alt="Globo de conexões" /><br /><b>Globo de conexões</b>: continentes procedurais, arcos animados e atmosfera em shader, para heros de SaaS.</td>
@@ -113,7 +122,7 @@ Depois peça normalmente, por exemplo *"cria um hero 3D leve pra landing"*, *"qu
 | [`anim3d-mapas`](anim3d-mapas/SKILL.md) | Globo e mapas interativos, mapa do Brasil (IBGE), arcos de fluxo. |
 | [`anim3d-topologia`](anim3d-topologia/SKILL.md) | Editor e simulador de pacotes de rede, com modo depurar. |
 | [`anim3d-infra-fisica`](anim3d-infra-fisica/SKILL.md) | Rack em U, portas e cabos pela eletrocalha; exemplo de rack de empresa de médio porte. |
-| [`anim3d-rede-logica`](anim3d-rede-logica/SKILL.md) | Topologia lógica derivada dos cabos e impacto de falha por sala. |
+| [`anim3d-rede-logica`](anim3d-rede-logica/SKILL.md) | Topologia lógica derivada dos cabos, impacto de falha por sala e descoberta em ondas; exemplo com queda de switch. |
 | [`anim3d-wifi-rf`](anim3d-wifi-rf/SKILL.md) | Cobertura Wi-Fi com paredes e andares; exemplo com planta, APs arrastáveis e 2,4 × 5 GHz. |
 | [`anim3d-infra-validacao`](anim3d-infra-validacao/SKILL.md) | Regras de projeto, inventário e comparação com a rede real. |
 
@@ -177,7 +186,7 @@ anim3d-suite/
 ├── anim3d-motion/            SKILL.md + references/ + motor/ (mola analítica, linha do tempo, testados) + exemplo/
 ├── anim3d-topologia/         SKILL.md + exemplo/ (editor de topologia de rede em 3D com vista 2D, pacote animado com rastro, modo depurar)
 ├── anim3d-infra-fisica/      SKILL.md + motor/ + exemplo/ + references/ (rack de empresa de médio porte em 3D: U, portas, cabo pela eletrocalha, queda, validação)
-├── anim3d-rede-logica/       SKILL.md + motor/ (topologia lógica derivada da física, impacto de falha, descoberta)
+├── anim3d-rede-logica/       SKILL.md + motor/ + exemplo/ (topologia lógica derivada da física, impacto de falha, descoberta em ondas)
 ├── anim3d-wifi-rf/           SKILL.md + motor/ + exemplo/ (cobertura Wi-Fi com paredes e andares, planta com APs arrastáveis)
 ├── anim3d-infra-validacao/   SKILL.md + motor/ (regras de projeto, inventário, gêmeo digital)
 ├── anim3d-mobile/            SKILL.md + exemplo/ (celular)

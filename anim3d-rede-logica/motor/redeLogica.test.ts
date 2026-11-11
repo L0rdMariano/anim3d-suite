@@ -45,6 +45,11 @@ describe('impacto de falha e descoberta', () => {
     const r = impactoDeFalha(t, 'srv', 'srv', salaDe);
     expect(r.semConexao.sort()).toEqual(['pc1', 'pc2']);
   });
+  it('descoberta não atravessa switch desligado nem parte de semente desligada', () => {
+    const off = { ...t, disps: t.disps.map((d) => (d.id === 'sw1' ? { ...d, ligado: false } : d)) };
+    expect(ordemDeDescoberta(off, 'srv').map((x) => x.id)).toEqual(['srv']); // sw1 era a única saída do servidor
+    expect(ordemDeDescoberta(off, 'sw1')).toEqual([]);
+  });
   it('descoberta em ondas a partir do servidor', () => {
     const o = ordemDeDescoberta(t, 'srv');
     expect(o[0]).toEqual({ id: 'srv', via: null, onda: 0 });
