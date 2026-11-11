@@ -7,7 +7,7 @@ description: "Cobertura e propagação Wi-Fi em planta e em vários andares: sin
 
 O erro típico é desenhar um **círculo** em volta do ponto de acesso. Sinal real é recortado por paredes e lajes. O produto é o **mapa de calor calculado**, e a onda animada só o apresenta.
 
-Motor testado: `motor/rf.ts`. Parede e andar vêm de `anim3d-infra-fisica`.
+Motor testado: `motor/rf.ts`. Parede e andar vêm de `anim3d-infra-fisica`. Exemplo completo (planta dos 3 andares do prédio do rack, APs arrastáveis, 2,4 × 5 GHz, onda): `exemplo/CoberturaWifi.tsx` com os dados em `exemplo/wifiDados.ts` (galeria, grupo "Redes").
 
 ## Workflow
 
@@ -30,6 +30,8 @@ Motor testado: `motor/rf.ts`. Parede e andar vêm de `anim3d-infra-fisica`.
 - **Parede fora do caminho.** Só conta a parede cuja linha AP→ponto realmente cruza o segmento; paredes paralelas ou ao lado não atenuam (teste).
 - **Laje conta uma vez por andar.** Dois andares acima = 2 lajes. Distância 3D usa 3 m por andar; sem isso o andar de cima fica melhor que o do lado.
 - **Mapa por AP em vez de melhor AP.** Somar APs superestima. Cada célula usa o maior sinal (como o cliente real).
+- **Métrica que satura.** Com AP de 20 dBm numa planta de 28 × 16 m, 100% da área já era "aceitável" (−75 dBm) até com o AP trancado na sala de concreto: o exemplo não ensinava nada. A métrica de manchete é **sinal bom** (−67 dBm): 2,4 GHz dá 92%/77%/70% nos três andares e 5 GHz dá 83%/59%/56%.
+- **Parede invisível sobre o mapa.** Linha fina da cor do material some sobre o verde do mapa; desenhe um contorno escuro por baixo e faça a espessura crescer com a perda do material.
 - **Números fixos de material.** `PERDA_MATERIAL` são valores de planejamento. Medição no local manda; deixe a tabela editável na interface.
 
 ## Origem dos números (sem fonte primária registrada)
@@ -54,4 +56,5 @@ Modelo simplificado (log-distância + paredes). Não calcula reflexão, difraç�
 ## Próximos passos
 
 - Canal e interferência entre APs; capacidade por AP.
+- Editar o material de cada parede na interface (hoje a tabela é só leitura no exemplo).
 - Importar medições reais para calibrar o expoente por ambiente.

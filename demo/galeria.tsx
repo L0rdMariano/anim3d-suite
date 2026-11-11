@@ -10,6 +10,7 @@ import { Colunas3D } from '../anim3d-dashboard/exemplo/Colunas3D';
 import { CentroComando3D } from '../anim3d-mapas/exemplo/CentroComando3D';
 import { Topologia } from '../anim3d-topologia/exemplo/Topologia';
 import { RackEmpresa } from '../anim3d-infra-fisica/exemplo/RackEmpresa';
+import { CoberturaWifi } from '../anim3d-wifi-rf/exemplo/CoberturaWifi';
 import { ComparaMolas } from '../anim3d-motion/exemplo/ComparaMolas';
 import { Celular3D } from '../anim3d-mobile/exemplo/Celular3D';
 import { MicroInteracoes } from '../anim3d-app-ui/exemplo/MicroInteracoes';
@@ -214,6 +215,34 @@ validarProjeto(modelo); // [] = projeto consistente`,
     palco: () => (
       <div style={{ width: '100%' }}>
         <RackEmpresa />
+      </div>
+    ),
+  },
+  {
+    id: 'wifi-cobertura',
+    grupo: 'Redes',
+    icone: '◎',
+    titulo: 'Cobertura Wi-Fi do prédio',
+    resumo: 'Mapa de calor com paredes, andares e APs arrastáveis',
+    descricao:
+      'Planta dos 3 andares do prédio do rack de empresa com paredes por material (drywall, vidro, tijolo, concreto) e os pontos de acesso do mesmo modelo. O mapa é calculado: perda de percurso log-distância, atenuação por parede cruzada e por laje, melhor AP em cada célula. Arraste um AP (ou use as setas), troque entre 2,4 GHz e 5 GHz e veja a sombra atrás do poço do elevador; a onda animada só revela o que já foi calculado. Os números (sinal bom, aceitável, sem sinal) saem do mesmo mapa que é pintado.',
+    tecnicas: ['perda log-distância + parede + laje', 'melhor AP por célula', 'canvas 2D (planta)', 'arrastar com pointer capture', 'teclado por AP (setas)', 'onda de revelação', 'tokens CSS no canvas', 'APs vindos do modelo do rack'],
+    destaques: ['O mapa nunca é um círculo: o concreto recorta a cobertura', '5 GHz cobre menos que 2,4 GHz e a tela mostra por quê', 'Valores de material declarados como "de partida, sem fonte"', 'Movimento reduzido: mapa completo, sem onda'],
+    metricas: [['3', 'andares com planta'], ['2', 'bandas (2,4 e 5 GHz)'], ['5', 'materiais de parede'], ['14', 'testes (motor e planta)']],
+    skill: 'anim3d-wifi-rf',
+    arquivos: ['anim3d-wifi-rf/exemplo/CoberturaWifi.tsx', 'anim3d-wifi-rf/exemplo/wifiDados.ts', 'anim3d-wifi-rf/exemplo/cobertura.css', 'anim3d-wifi-rf/motor/rf.ts'],
+    uso: `import { CoberturaWifi } from './CoberturaWifi';
+import { apsDaEmpresa, cobertura } from './wifiDados';
+
+<CoberturaWifi />
+
+// só o motor (sem tela)
+const { resumo } = cobertura(apsDaEmpresa(), '5', 0);
+resumo.bom; // fração da área com ≥ −67 dBm`,
+    prop: 1.5,
+    palco: () => (
+      <div style={{ width: '100%' }}>
+        <CoberturaWifi />
       </div>
     ),
   },

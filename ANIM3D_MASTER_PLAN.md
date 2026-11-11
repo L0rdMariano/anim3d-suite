@@ -359,7 +359,7 @@ As da proposta + as já vigentes em `CONTRIBUTING.md`. Para cada uma, **como é 
 |---|---|
 | `anim3d-mapas` (mapa plano e globo, países, data centers, Brasil/IBGE) | Entregue e testado |
 | `anim3d-topologia` (editor 2D/3D, pacote, depurar) | Entregue e testado |
-| `anim3d-infra-fisica`, `-rede-logica`, `-wifi-rf`, `-infra-validacao` (família "Network Infrastructure Designer": 13 especialidades propostas consolidadas em 4 skills; motores testados + exemplo 3D `RackEmpresa` na galeria) | Entregue em 2026-11-11 (v0.1.0); faltam Exploded, Walkthrough e exemplos de Wi-Fi |
+| `anim3d-infra-fisica`, `-rede-logica`, `-wifi-rf`, `-infra-validacao` (família "Network Infrastructure Designer": 13 especialidades propostas consolidadas em 4 skills; motores testados + exemplo 3D `RackEmpresa` na galeria) | Entregue em 2026-11-11 (v0.1.0); exemplo de Wi-Fi `CoberturaWifi` entregue; faltam Exploded e Walkthrough |
 | Telemetria ao vivo (`telemetria.ts`, `fontesDados.ts`, 24 testes na topologia) | **Camada de dados pronta**; faltam a ponte local, a animação de fluxo por Mbps na tela e o painel "Dados ao vivo" |
 | `anim3d-grafos` (conceitos de visualizadores de redes multicamada) | Planejada na Fase 3; **referência com licença copyleft: só conceitos** |
 | `docs/PLANO-EVOLUCAO.md` | Anexo técnico (motor, famílias, animações) |

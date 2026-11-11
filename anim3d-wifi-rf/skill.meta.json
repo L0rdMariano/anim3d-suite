@@ -4,6 +4,7 @@
   "descricao": "Cobertura Wi-Fi em planta e andares: perda de percurso, paredes, lajes e mapa de melhor AP.",
   "licencas": ["MIT"],
   "dependencias": ["anim3d-infra-fisica"],
+  "dependenciasExemplo": ["anim3d-fundamentos"],
   "compatibilidade": {
     "claude-code": "a confirmar",
     "codex": "a confirmar",

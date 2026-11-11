@@ -25,7 +25,7 @@ Escopo: as 16 skills `anim3d-*`, README, plano mestre, galeria e cópias instala
 |---|---|---|---|
 | 1 | **Cores hex soltas nas skills antigas** (dashboard 108, topologia 77, mapas 21, mobile 21, motion 15, saas 6) | migrar ~250 cores para tokens sem teste visual automatizado arrisca regressão silenciosa de aparência | capturas de referência por exemplo, depois migrar uma skill por vez; o validador já mostra o número e impede esquecer |
 | 2 | O proxy de roteamento é lexical e os 33 casos foram escritos e ajustados por mim (100% é otimista) | não há como chamar o agente real de dentro do repositório | casos novos de quem usa; rodar com o agente de verdade quando houver acesso; separar um conjunto de teste que ninguém ajusta |
-| 3 | `anim3d-wifi-rf` e `anim3d-rede-logica` sem exemplo visual | pelo padrão, 1 exemplo por skill | Wi-Fi sobre a planta do `RackEmpresa` |
+| 3 | `anim3d-rede-logica` sem exemplo visual próprio (o `RackEmpresa` usa seu motor, mas a skill não tem exemplo na pasta). `anim3d-wifi-rf` **resolvido**: `CoberturaWifi` | pelo padrão, 1 exemplo por skill | exemplo de Network Discovery e queda de switch sobre a topologia derivada |
 | 4 | Números do Wi-Fi sem fonte primária | não há norma ou datasheet citável no repositório | confirmar com fabricante ou site survey |
 | 5 | Compatibilidade "verificado" só em `estilos` e `motion`; demais "a confirmar" | sem acesso a Codex, Gemini CLI e Cursor | testar quando houver acesso |
 | 6 | Projetos de inspiração do rack sem autor, URL e licença | não verificável daqui | preencher `anim3d-infra-fisica/references/inspiracoes.md` |

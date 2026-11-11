@@ -114,7 +114,7 @@ Depois peça normalmente, por exemplo *"cria um hero 3D leve pra landing"*, *"qu
 | [`anim3d-topologia`](anim3d-topologia/SKILL.md) | Editor e simulador de pacotes de rede, com modo depurar. |
 | [`anim3d-infra-fisica`](anim3d-infra-fisica/SKILL.md) | Rack em U, portas e cabos pela eletrocalha; exemplo de rack de empresa de médio porte. |
 | [`anim3d-rede-logica`](anim3d-rede-logica/SKILL.md) | Topologia lógica derivada dos cabos e impacto de falha por sala. |
-| [`anim3d-wifi-rf`](anim3d-wifi-rf/SKILL.md) | Cobertura Wi-Fi com paredes e andares (motor testado, sem exemplo visual ainda). |
+| [`anim3d-wifi-rf`](anim3d-wifi-rf/SKILL.md) | Cobertura Wi-Fi com paredes e andares; exemplo com planta, APs arrastáveis e 2,4 × 5 GHz. |
 | [`anim3d-infra-validacao`](anim3d-infra-validacao/SKILL.md) | Regras de projeto, inventário e comparação com a rede real. |
 
 ## O kit em 30 segundos
@@ -178,7 +178,7 @@ anim3d-suite/
 ├── anim3d-topologia/         SKILL.md + exemplo/ (editor de topologia de rede em 3D com vista 2D, pacote animado com rastro, modo depurar)
 ├── anim3d-infra-fisica/      SKILL.md + motor/ + exemplo/ + references/ (rack de empresa de médio porte em 3D: U, portas, cabo pela eletrocalha, queda, validação)
 ├── anim3d-rede-logica/       SKILL.md + motor/ (topologia lógica derivada da física, impacto de falha, descoberta)
-├── anim3d-wifi-rf/           SKILL.md + motor/ (cobertura Wi-Fi com paredes e andares)
+├── anim3d-wifi-rf/           SKILL.md + motor/ + exemplo/ (cobertura Wi-Fi com paredes e andares, planta com APs arrastáveis)
 ├── anim3d-infra-validacao/   SKILL.md + motor/ (regras de projeto, inventário, gêmeo digital)
 ├── anim3d-mobile/            SKILL.md + exemplo/ (celular)
 ├── anim3d-app-ui/            SKILL.md + exemplo/ (micro-interações)
