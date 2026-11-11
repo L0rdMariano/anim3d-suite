@@ -9,6 +9,7 @@ import { ecossistemaExemplo } from '../anim3d-dashboard/exemplo/ecossistemaDados
 import { Colunas3D } from '../anim3d-dashboard/exemplo/Colunas3D';
 import { CentroComando3D } from '../anim3d-mapas/exemplo/CentroComando3D';
 import { Topologia } from '../anim3d-topologia/exemplo/Topologia';
+import { RackEmpresa } from '../anim3d-infra-fisica/exemplo/RackEmpresa';
 import { ComparaMolas } from '../anim3d-motion/exemplo/ComparaMolas';
 import { Celular3D } from '../anim3d-mobile/exemplo/Celular3D';
 import { MicroInteracoes } from '../anim3d-app-ui/exemplo/MicroInteracoes';
@@ -164,14 +165,14 @@ import { ecossistemaExemplo } from './ecossistemaDados';
     grupo: 'Redes',
     icone: '⌬',
     titulo: 'Topologia de rede 3D (estilo Packet Tracer)',
-    resumo: 'Rede em 3D, pacote animado e depuração',
+    resumo: 'Sala Cofre 3D, telemetria ao vivo e depuração',
     descricao:
-      'Editor de topologia em 3D (com vista 2D de reserva): dispositivos modelados em camadas de altura, cabos que acendem na cor do protocolo, pacote com rastro e estouro no ponto de descarte. Adicione roteadores, switches, firewalls, servidores e computadores, arraste, ligue cabos e derrube enlaces. Envie um pacote (ICMP, HTTP, SSH, DNS) e veja-o percorrer a rota de menor latência. No modo depurar você avança salto a salto e vê onde e por que o pacote foi entregue ou descartado: dispositivo desligado, enlace caído, regra de firewall ou rede sem rota. O motor roda e é testado em Node.',
-    tecnicas: ['modelos 3D procedurais (sem .glb)', 'camadas em altura', 'pacote com rastro por Points', 'tráfego de fundo em partículas', 'câmera orbital própria e enquadramento automático', 'SVG 2D como fallback', 'Dijkstra por latência', 'rastreio salto a salto', 'pacote animado por ref + rAF', 'pointer capture para arrastar', 'teclado: setas movem, Delete remove'],
-    destaques: ['O resultado é um objeto de dados (passos com motivo)', 'Qualquer edição invalida o rastreio anterior', 'Avisos: IP duplicado e dispositivo isolado', 'Copiar e carregar a topologia como JSON'],
-    metricas: [['6', 'tipos de dispositivo'], ['4', 'protocolos'], ['4', 'motivos de descarte'], ['10', 'testes do motor']],
+      'Editor corporativo de topologia em 3D ambientado em Piso Elevado de Datacenter (Sala Cofre / NOC com placas técnicas modulares, calhas de fibra óptica sob o piso, iluminação clara de engenharia e escura de NOC, e Globo Geodésico de Backbone WAN) com vista 2D de reserva: dispositivos modelados em camadas de altura, cabos que acendem na cor do protocolo ou utilização ao vivo (Mbps), pacote com rastro e estouro no ponto de descarte. Adicione roteadores, switches, firewalls, servidores e computadores, arraste, ligue cabos, conecte telemetria ao vivo (simulada, SSE, WebSocket, polling) e use o modo depurar salto a salto.',
+    tecnicas: ['piso elevado de datacenter 3D procedural', 'telemetria ao vivo (SSE/WS/polling)', 'camadas em altura', 'pacote com rastro por Points', 'tráfego proporcional a Mbps', 'câmera orbital própria e enquadramento automático', 'SVG 2D como fallback', 'Dijkstra por latência', 'rastreio salto a salto'],
+    destaques: ['O resultado é um objeto de dados (passos com motivo)', 'Telemetria ao vivo validada com sparklines e ranking de enlaces', 'Qualquer edição invalida o rastreio anterior', 'Avisos: IP duplicado e dispositivo isolado'],
+    metricas: [['6', 'tipos de dispositivo'], ['4', 'protocolos'], ['4', 'fontes de telemetria'], ['24', 'testes (motor e telemetria)']],
     skill: 'anim3d-topologia',
-    arquivos: ['anim3d-topologia/exemplo/Topologia.tsx', 'anim3d-topologia/exemplo/Topologia3DCena.tsx', 'anim3d-topologia/exemplo/topologiaSim.ts', 'anim3d-topologia/exemplo/topologia.css'],
+    arquivos: ['anim3d-topologia/exemplo/Topologia.tsx', 'anim3d-topologia/exemplo/Topologia3DCena.tsx', 'anim3d-topologia/exemplo/telemetria.ts', 'anim3d-topologia/exemplo/fontesDados.ts', 'anim3d-topologia/exemplo/topologiaSim.ts', 'anim3d-topologia/exemplo/topologia.css'],
     uso: `import { Topologia } from './Topologia';
 import { tracar } from './topologiaSim';
 
@@ -184,6 +185,35 @@ const r = tracar(topologia, 'pc1', 'srv1', 'http');
     palco: () => (
       <div style={{ aspectRatio: '3 / 2', width: '100%' }}>
         <Topologia />
+      </div>
+    ),
+  },
+  {
+    id: 'rack-empresa',
+    grupo: 'Redes',
+    icone: '▤',
+    titulo: 'Rack de empresa de médio porte',
+    resumo: 'Rack 42 U, cabo até a tomada, queda e validação',
+    descricao:
+      'Rack de TI de uma empresa de ~120 pessoas em 3 andares, modelado com propriedades reais: 15 equipamentos em U, energia e UPS, 9 estações e 3 APs de amostra, patch panels, tomadas e cabos pela eletrocalha e pela prumada. Escolha uma estação e o cabo cresce do PC, passa pela tomada e pelo patch panel e chega à porta do switch, com o comprimento do canal contra o limite de 100 m. Desligue um switch e veja quais andares perdem a conexão; injete defeitos de projeto e a validação aponta cada um. A topologia lógica é derivada dos cabos, nunca desenhada à parte.',
+    tecnicas: ['modelo físico com U, W e portas', 'cabo pela eletrocalha (Dijkstra com nó por andar)', 'canal atravessando passivos pela mesma porta', 'topologia lógica derivada dos cabos', 'impacto de falha por sala', 'validação com regras clicáveis', 'InstancedMesh para as portas', 'drawRange proporcional aos metros'],
+    destaques: ['O 3D só desenha o modelo: posição, porta e cabo vêm dos motores', 'Rack consistente passa sem achados; o botão de defeitos prova a validação', 'Elevação SVG de 42 U como fallback sem WebGL', 'Amostra declarada: 9 estações dos ~120 pontos'],
+    metricas: [['42', 'U no rack (21 usados)'], ['2830 W', 'de 4500 W (63%)'], ['9 + 3', 'estações + APs'], ['4', 'defeitos injetáveis']],
+    skill: 'anim3d-infra-fisica',
+    arquivos: ['anim3d-infra-fisica/exemplo/RackEmpresa.tsx', 'anim3d-infra-fisica/exemplo/RackEmpresa3DCena.tsx', 'anim3d-infra-fisica/exemplo/empresaDados.ts', 'anim3d-infra-fisica/exemplo/rackEmpresa.css', 'anim3d-infra-fisica/motor/infraFisica.ts', 'anim3d-rede-logica/motor/redeLogica.ts', 'anim3d-infra-validacao/motor/validacao.ts'],
+    uso: `import { RackEmpresa } from './RackEmpresa';
+import { empresaMedioPorte } from './empresaDados';
+import { validarProjeto } from '../../anim3d-infra-validacao/motor/validacao';
+
+<RackEmpresa />
+
+// só os motores (sem tela)
+const modelo = empresaMedioPorte();
+validarProjeto(modelo); // [] = projeto consistente`,
+    prop: 1.5,
+    palco: () => (
+      <div style={{ width: '100%' }}>
+        <RackEmpresa />
       </div>
     ),
   },

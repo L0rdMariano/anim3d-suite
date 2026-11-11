@@ -1,0 +1,14 @@
+{
+  "nome": "anim3d-infra-validacao",
+  "versao": "0.1.0",
+  "descricao": "Regras de consistência, inventário e comparação com a rede real para projetos de infraestrutura.",
+  "licencas": ["MIT"],
+  "dependencias": ["anim3d-infra-fisica", "anim3d-rede-logica"],
+  "compatibilidade": {
+    "claude-code": "a confirmar",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  }
+}

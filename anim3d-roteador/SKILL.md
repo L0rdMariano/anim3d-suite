@@ -19,6 +19,10 @@ Antes de escrever código, responda estas quatro perguntas. Elas decidem tudo.
 | Escolher o visual ou 'estilo' (premium, futurista, vidro, neon, orgânico, brutalista, sala de controle...) | `anim3d-estilos` | Fixar luz, material, paleta e câmera antes do código |
 | Qualquer animação: timing, easing, mola, coreografia, câmera, loop, movimento reduzido | `anim3d-motion` | Movimento com personalidade, sem salto e sem depender do FPS |
 | Topologia de rede, simulador de pacotes, estilo Packet Tracer, troubleshooting | `anim3d-topologia` | Montar a rede e entender onde o pacote para |
+| Sala de servidores, rack em U, patch panel, cabeamento, eletrocalha, planta do prédio | `anim3d-infra-fisica` | Modelo com propriedades reais, cabo pela calha |
+| Topologia lógica a partir dos cabos, queda de switch, quem perde conexão, descoberta de rede | `anim3d-rede-logica` | Derivar a lógica da física e mostrar o impacto |
+| Cobertura Wi-Fi, posição de ponto de acesso, sinal atravessando parede e andar | `anim3d-wifi-rf` | Mapa de calor calculado, não círculo |
+| Conferir se o projeto de infraestrutura é possível, inventário, planta, gêmeo digital | `anim3d-infra-validacao` | Regras clicáveis e documentação do mesmo modelo |
 | Diagrama isométrico de arquitetura/fluxo | `anim3d-dashboard` (exemplo `Ecossistema3D`) | Explicar sistema |
 | Gêmeo digital / operação ao vivo (armazém, fábrica) | `anim3d-dashboard` (exemplo `almoxarifado/`) | Explorar e acompanhar |
 

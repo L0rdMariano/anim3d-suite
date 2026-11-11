@@ -1,0 +1,14 @@
+{
+  "nome": "anim3d-wifi-rf",
+  "versao": "0.1.0",
+  "descricao": "Cobertura Wi-Fi em planta e andares: perda de percurso, paredes, lajes e mapa de melhor AP.",
+  "licencas": ["MIT"],
+  "dependencias": ["anim3d-infra-fisica"],
+  "compatibilidade": {
+    "claude-code": "a confirmar",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  }
+}

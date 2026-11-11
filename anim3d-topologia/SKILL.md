@@ -7,6 +7,8 @@ description: "Editor e simulador de topologia de rede em 3D (com vista 2D) estil
 
 Duas coisas distintas: **desenhar a rede** (editor) e **entender o que acontece com um pacote nela** (simulação + depuração). O valor está na segunda: o usuário aprende quando vê **onde** e **por que** o pacote parou.
 
+Para rede **ligada ao prédio** (rack, patch panel, cabo físico, Wi-Fi, planta), a topologia lógica é derivada: siga `anim3d-infra-fisica` → `anim3d-rede-logica` (que reaproveita este motor) → `anim3d-infra-validacao`.
+
 Exemplo completo, testado e visível na galeria (`npm run demo`, grupo "Redes"): `exemplo/` desta skill. Siga também `anim3d-roteador` e, na entrega, `anim3d-performance-a11y`.
 
 ## Escolha a tecnologia
@@ -46,7 +48,9 @@ topologia (dados JSON) ──> motor puro (topologiaSim.ts) ──> Resultado { 
 
 ## Vista 3D (receitas)
 
-- **Camadas em altura**: o editor guarda `x, y` 2D; no mundo 3D isso vira o chão (`x`, `z`) e o **tipo** define a altura (internet 2,6 · firewall 1,2 · roteador 1,0 · switch 0,5 · hosts 0). Uma haste fina e um disco no chão ancoram cada dispositivo e deixam a altura legível; os cabos inclinam sozinhos. Arrastar move só (`x`, `z`): `e.ray.intersectPlane` com um plano horizontal na altura do dispositivo, convertido de volta ao espaço do editor.
+- **Piso Elevado de Datacenter / Sala Cofre (`exemplo/Topologia3DCena.tsx`)**: bancada técnica modular em grafite/alumínio anodizado, calhas de fibra óptica sob o piso (`PisoDatacenter`), iluminação direcional + hemisférica com alternância entre modo claro de engenharia (`☀ Claro`) e escuro de NOC (`☾ Escuro`), pedestais modulares e chassis táteis para cada equipamento de rede (incluindo Globo Geodésico de Backbone WAN para o nó Internet).
+- **Telemetria ao vivo (`exemplo/telemetria.ts` + `exemplo/fontesDados.ts`)**: dado externo passa sempre por `validarMensagem` (tipos, faixas, IDs seguros) e `urlSegura` antes de entrar em `aplicar`. Fontes plugáveis: `fonteSimulada`, `fonteSSE`, `fonteWebSocket` e `fontePolling`. Cabos mudam de espessura pela capacidade (`mbpsMax`) e de cor/velocidade de partículas pela utilização (`rgbUtilizacao`).
+- **Camadas em altura**: o editor guarda `x, y` 2D; no mundo 3D isso vira o chão (`x`, `z`) e o **tipo** define a altura (internet 2,2 · firewall 1,05 · roteador 0,9 · switch 0,45 · hosts 0). Uma haste fina e um pedestal ancoram cada dispositivo e deixam a altura legível; os cabos inclinam sozinhos. Arrastar move só (`x`, `z`): `e.ray.intersectPlane` com um plano horizontal, convertido de volta ao espaço do editor.
 - **Modelos procedurais** (cilindro + anel + antenas = roteador; caixa + portas = switch; tijolos = firewall; módulos empilhados com LEDs = servidor; monitor = PC; esferas translúcidas = internet). Sem `.glb`: carregam na hora, recolorem por estado e são fáceis de trocar. LEDs piscam; desligado vira translúcido e sem brilho.
 - **Pacote**: esfera + halo aditivo + **rastro de 10 posições** num `Points` com `vertexColors` (preto = invisível no aditivo). O salto dura ∝ latência. O pai troca o índice do passo só no **fim do salto** (`aoFimSalto`), então a animação 3D conduz o mesmo estado do 2D e do painel de passos.
 - **Descarte e entrega**: onda de anel que se expande (vermelha ou verde), tremor curto do dispositivo e pacote que pulsa no lugar. Efeitos vivem num `ref` (mapas `alerta`/`entrega` com o instante), nunca em estado do React.

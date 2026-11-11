@@ -1,8 +1,18 @@
-// Exemplo anim3d-topologia · Editor de topologia de rede com pacote animado e modo depurar (estilo Packet Tracer).
-// SVG puro (leve e acessível por teclado). O motor (topologiaSim.ts) calcula rota e rastreio; aqui só se desenha.
-// Uso: <Topologia /> em um contêiner com largura definida.
+// Exemplo anim3d-topologia · Editor e simulador de topologia de rede em 3D (com vista 2D) estilo Packet Tracer,
+// ambientado em Piso Elevado de Datacenter (Sala Cofre / NOC) e conectado à telemetria ao vivo (`telemetria.ts` + `fontesDados.ts`).
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as PtrEvent } from 'react';
 import { Cena3DSegura } from '@anim3d/kit';
+import { fontePolling, fonteSimulada, fonteSSE, fonteWebSocket, urlSegura, type EstadoFonte } from './fontesDados';
+import {
+  aplicar,
+  aplicarNaTopologia,
+  corUtilizacao,
+  maisCarregados,
+  telemetriaVazia,
+  utilizacao,
+  validarMensagem,
+  type Telemetria,
+} from './telemetria';
 import type { Props3D } from './Topologia3DCena';
 import {
   EH_HOST,
@@ -28,6 +38,30 @@ const LARGURA = 760;
 const ALTURA = 480;
 const TIPOS: TipoDisp[] = ['roteador', 'switch', 'firewall', 'servidor', 'pc', 'nuvem'];
 const COR_PROTOCOLO: Record<Protocolo, string> = { icmp: '#22d3ee', http: '#3ddc97', ssh: '#ffd23f', dns: '#c4b5fd' };
+const COR_TIPO: Record<TipoDisp, string> = {
+  roteador: '#06b6d4',
+  switch: '#10b981',
+  firewall: '#f97316',
+  servidor: '#8b5cf6',
+  pc: '#3b82f6',
+  nuvem: '#0ea5e9',
+};
+
+function SparkMini({ valores, cor = '#4f46e5' }: { valores: number[]; cor?: string }) {
+  const lista = valores.length >= 2 ? valores.slice(-20) : [12, 18, 15, 24, 20, 28];
+  const max = Math.max(...lista, 1);
+  const min = Math.min(...lista, 0);
+  const faixa = Math.max(1, max - min);
+  const w = 76;
+  const h = 22;
+  const pts = lista.map((v, i) => `${((i / (lista.length - 1)) * w).toFixed(1)},${(h - ((v - min) / faixa) * (h - 4) - 2).toFixed(1)}`).join(' ');
+  return (
+    <svg className="tp-spark" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true">
+      <polyline points={`0,${h} ${pts} ${w},${h}`} fill={cor} fillOpacity="0.14" />
+      <polyline points={pts} fill="none" stroke={cor} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 function Icone({ tipo }: { tipo: TipoDisp }) {
   switch (tipo) {
@@ -69,7 +103,13 @@ function Icone({ tipo }: { tipo: TipoDisp }) {
         </g>
       );
     case 'nuvem':
-      return <path d="M-20 12a9 9 0 0 1 1-17 12 12 0 0 1 23-3 10 10 0 0 1 14 20z" />;
+      return (
+        <g>
+          <circle r="19" />
+          <ellipse rx="9" ry="19" />
+          <path d="M-19 0H19M-16 -9H16M-16 9H16" />
+        </g>
+      );
   }
 }
 
@@ -79,7 +119,15 @@ interface Anim {
   tocando: boolean;
 }
 
-export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com simulação de pacotes', vistaInicial = '3d' }: { inicial?: Topo; rotulo?: string; vistaInicial?: '2d' | '3d' }) {
+export function Topologia({
+  inicial,
+  rotulo = 'Editor de topologia de rede com simulação de pacotes',
+  vistaInicial = '3d',
+}: {
+  inicial?: Topo;
+  rotulo?: string;
+  vistaInicial?: '2d' | '3d';
+}) {
   const [topo, setTopo] = useState<Topo>(() => inicial ?? topologiaExemplo());
   const [sel, setSel] = useState<{ tipo: 'd' | 'e'; id: string } | null>(null);
   const [modo, setModo] = useState<'mover' | 'ligar'>('mover');
@@ -92,17 +140,85 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
   const [anim, setAnim] = useState<Anim>({ passo: -1, tocando: false });
   const [copiado, setCopiado] = useState(false);
   const [vista, setVista] = useState<'2d' | '3d'>(vistaInicial);
+  const [noite, setNoite] = useState(false);
+  const [resumoAberto, setResumoAberto] = useState(false);
+
+  // ---- Telemetria ao vivo (`telemetria.ts` + `fontesDados.ts`) ----
+  const [aoVivo, setAoVivo] = useState(true);
+  const [tipoFonte, setTipoFonte] = useState<'simulada' | 'sse' | 'ws' | 'polling'>('simulada');
+  const [urlFonte, setUrlFonte] = useState('http://127.0.0.1:5181/eventos');
+  const [tel, setTel] = useState<Telemetria>(() => telemetriaVazia());
+  const [estadoFonte, setEstadoFonte] = useState<EstadoFonte>({ fase: 'parado' });
+  const [histTotalMbps, setHistTotalMbps] = useState<number[]>([]);
+
   const svg = useRef<SVGSVGElement>(null);
   const pacote = useRef<SVGGElement>(null);
   const topoRef = useRef(topo);
   topoRef.current = topo;
   const arrasto = useRef<{ id: string; dx: number; dy: number; x0: number; y0: number; moveu: boolean } | null>(null);
 
+  useEffect(() => {
+    if (!aoVivo) {
+      setEstadoFonte({ fase: 'parado' });
+      return;
+    }
+    let fonte = fonteSimulada(() => topoRef.current);
+    if (tipoFonte === 'sse') {
+      const u = urlSegura(urlFonte, ['http:', 'https:']);
+      if (!u) {
+        setEstadoFonte({ fase: 'erro', detalhe: 'URL HTTP/HTTPS inválida' });
+        return;
+      }
+      fonte = fonteSSE(u);
+    } else if (tipoFonte === 'ws') {
+      const u = urlSegura(urlFonte, ['ws:', 'wss:']);
+      if (!u) {
+        setEstadoFonte({ fase: 'erro', detalhe: 'URL WS/WSS inválida' });
+        return;
+      }
+      fonte = fonteWebSocket(u);
+    } else if (tipoFonte === 'polling') {
+      const u = urlSegura(urlFonte, ['http:', 'https:']);
+      if (!u) {
+        setEstadoFonte({ fase: 'erro', detalhe: 'URL HTTP/HTTPS inválida' });
+        return;
+      }
+      fonte = fontePolling(u);
+    }
+    const parar = fonte.iniciar(
+      (bruto) => {
+        const msgs = validarMensagem(bruto);
+        if (msgs.length === 0) return;
+        const agora = Date.now();
+        setTel((ant) => {
+          const novo = aplicar(ant, msgs, agora);
+          const soma = Object.values(novo.enlaces).reduce((s, m) => s + (m.mbps ?? 0), 0);
+          setHistTotalMbps((h) => [...h.slice(-29), Math.round(soma)]);
+          return novo;
+        });
+      },
+      (est) => setEstadoFonte(est),
+    );
+    return () => parar();
+  }, [aoVivo, tipoFonte, urlFonte]);
+
+  const topoEfetiva = useMemo(
+    () => (aoVivo && tipoFonte !== 'simulada' ? aplicarNaTopologia(topo, tel, Date.now()) : topo),
+    [aoVivo, tipoFonte, topo, tel],
+  );
+
   const hosts = topo.disps.filter((d) => EH_HOST[d.tipo]);
   const avisos = useMemo(() => validar(topo), [topo]);
-  const disp = (id: string) => topo.disps.find((d) => d.id === id);
-  const dSel = sel?.tipo === 'd' ? disp(sel.id) : undefined;
+  const disp = (id: string) => topoEfetiva.disps.find((d) => d.id === id);
+  const dSel = sel?.tipo === 'd' ? topo.disps.find((d) => d.id === sel.id) : undefined;
   const eSel = sel?.tipo === 'e' ? topo.enlaces.find((e) => e.id === sel.id) : undefined;
+
+  const topCarregados = useMemo(() => (aoVivo ? maisCarregados(topoEfetiva, tel, 3) : []), [aoVivo, topoEfetiva, tel]);
+  const totalMbps = useMemo(
+    () => Math.round(topoEfetiva.enlaces.reduce((s, e) => s + (e.ativo ? (tel.enlaces[e.id]?.mbps ?? 0) : 0), 0)),
+    [topoEfetiva, tel],
+  );
+  const maxUtilPct = useMemo(() => Math.round((topCarregados[0]?.util ?? 0) * 100), [topCarregados]);
 
   /** Qualquer edição que muda a rede invalida o resultado anterior (mover dispositivo não). */
   const editar = useCallback((f: (t: Topo) => Topo) => {
@@ -111,7 +227,7 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
     setAnim({ passo: -1, tocando: false });
   }, []);
 
-  // ---- animação do pacote: um salto por vez; a posição vai por ref (sem re-render por quadro) ----
+  // ---- animação do pacote (2D): um salto por vez; a posição vai por ref ----
   useEffect(() => {
     const g = pacote.current;
     if (!g) return;
@@ -130,7 +246,7 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
     g.style.opacity = '1';
     const quadro = (agora: number) => {
       const k = Math.min(1, (agora - inicio) / dur);
-      const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; // suaviza partida e chegada
+      const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
       g.setAttribute('transform', `translate(${a.x + (b.x - a.x) * e} ${a.y + (b.y - a.y) * e})`);
       if (k < 1) raf = requestAnimationFrame(quadro);
       else if (anim.tocando && anim.passo + 1 < resultado.passos.length) setAnim({ passo: anim.passo + 1, tocando: true });
@@ -141,7 +257,7 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
   }, [anim, resultado]);
 
   const enviar = () => {
-    const r = tracar(topo, origem, destino, protocolo);
+    const r = tracar(topoEfetiva, origem, destino, protocolo);
     setResultado(r);
     setAnim({ passo: r.passos.length ? 0 : -1, tocando: !depurar });
   };
@@ -151,7 +267,7 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
   };
   const irPasso = (n: number) => resultado && setAnim({ passo: Math.max(0, Math.min(resultado.passos.length - 1, n)), tocando: false });
 
-  // ---- arrastar dispositivos ----
+  // ---- arrastar dispositivos (2D) ----
   const pontoSvg = (e: { clientX: number; clientY: number }) => {
     const s = svg.current!;
     const pt = s.createSVGPoint();
@@ -244,21 +360,19 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
     }
   };
 
-  // enlaces coloridos pelo trecho já percorrido
   const percorridos = new Set(resultado && anim.passo >= 0 ? resultado.passos.slice(0, anim.passo + 1).map((p) => p.enlace).filter(Boolean) : []);
   const caiu = resultado && resultado.status === 'descartado' && anim.passo >= resultado.passos.length - 1 && !anim.tocando;
   const ultimo = resultado?.passos[resultado.passos.length - 1];
   const passoAtual = resultado && anim.passo >= 0 ? resultado.passos[anim.passo] : undefined;
   const corPacote = COR_PROTOCOLO[protocolo];
 
-  // vista 3D: o pai segue dono dos dados; a cena só desenha e devolve eventos
   const fimDoSalto = useCallback(
     (passo: number) => setAnim((a) => (a.passo !== passo || !a.tocando ? a : resultado && passo + 1 < resultado.passos.length ? { passo: passo + 1, tocando: true } : { passo, tocando: false })),
     [resultado],
   );
   const mudarSelecao = (id: string, tipo: 'd' | 'e') => setSel({ tipo, id });
-  const props3d = {
-    topo,
+  const props3d: Omit<Props3D, 'aoFalhar'> = {
+    topo: topoEfetiva,
     selecionado: sel,
     modo,
     pendente,
@@ -266,6 +380,9 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
     anim,
     corPacote: COR_PROTOCOLO[protocolo],
     destino,
+    noite,
+    telemetria: tel,
+    aoVivo,
     aoCliqueDisp: (id: string) => {
       const d = topo.disps.find((x) => x.id === id);
       if (d) aoCliqueDisp(d);
@@ -277,69 +394,81 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
   };
 
   const svgPlano = (
-        <svg ref={svg} className="tp-svg" viewBox={`0 0 ${LARGURA} ${ALTURA}`} role="img" aria-label={`${rotulo}: ${topo.disps.length} dispositivos e ${topo.enlaces.length} enlaces`} onPointerDown={(e) => e.target === e.currentTarget && (setSel(null), setPendente(null))}>
-          <defs>
-            <pattern id="tp-grade" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M40 0H0V40" fill="none" stroke="rgba(34,211,238,.07)" />
-            </pattern>
-          </defs>
-          <rect width={LARGURA} height={ALTURA} fill="url(#tp-grade)" onPointerDown={() => (setSel(null), setPendente(null))} />
+    <svg ref={svg} className="tp-svg" viewBox={`0 0 ${LARGURA} ${ALTURA}`} role="img" aria-label={`${rotulo}: ${topo.disps.length} dispositivos e ${topo.enlaces.length} enlaces`} onPointerDown={(e) => e.target === e.currentTarget && (setSel(null), setPendente(null))}>
+      <defs>
+        <pattern id="tp-grade" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M40 0H0V40" fill="none" stroke="rgba(34,211,238,.07)" />
+        </pattern>
+      </defs>
+      <rect width={LARGURA} height={ALTURA} fill="url(#tp-grade)" onPointerDown={() => (setSel(null), setPendente(null))} />
 
-          {topo.enlaces.map((e) => {
-            const a = disp(e.a);
-            const b = disp(e.b);
-            if (!a || !b) return null;
-            const cls = ['tp-enlace', !e.ativo && 'caido', percorridos.has(e.id) && 'rota', sel?.id === e.id && 'sel'].filter(Boolean).join(' ');
-            return (
-              <g key={e.id}>
-                <line className={cls} x1={a.x} y1={a.y} x2={b.x} y2={b.y} style={percorridos.has(e.id) ? { stroke: corPacote } : undefined} />
-                <line className="tp-enlace-alvo" x1={a.x} y1={a.y} x2={b.x} y2={b.y} onClick={() => setSel({ tipo: 'e', id: e.id })} />
-                <text className="tp-ms" x={(a.x + b.x) / 2} y={(a.y + b.y) / 2 - 6}>
-                  {e.ativo ? `${e.ms} ms` : '✕ caído'}
-                </text>
-              </g>
-            );
-          })}
-
-          {topo.disps.map((d) => (
-            <g
-              key={d.id}
-              className={['tp-disp', `tp-d-${d.tipo}`, !d.ligado && 'off', sel?.id === d.id && 'sel', pendente === d.id && 'pendente'].filter(Boolean).join(' ')}
-              transform={`translate(${d.x} ${d.y})`}
-              tabIndex={0}
-              role="button"
-              aria-label={`${ROTULO_TIPO[d.tipo]} ${d.nome}${d.ip ? `, IP ${d.ip}` : ''}${d.ligado ? '' : ', desligado'}`}
-              aria-pressed={sel?.id === d.id}
-              onPointerDown={(e) => baixo(e, d)}
-              onPointerMove={mover}
-              onPointerUp={() => cima(d)}
-              onKeyDown={(e) => teclado(e, d)}
-            >
-              <circle className="tp-halo" r="34" />
-              <Icone tipo={d.tipo} />
-              <text className="tp-nome" y="40">{d.nome}</text>
-              {d.ip && <text className="tp-ip" y="52">{d.ip}</text>}
-              {d.tipo === 'firewall' && (d.bloqueia?.length ?? 0) > 0 && <text className="tp-regra" y="-24">bloqueia {d.bloqueia!.join(', ')}</text>}
-            </g>
-          ))}
-
-          {caiu && ultimo && disp(ultimo.de) && (
-            <g className="tp-x" transform={`translate(${disp(ultimo.de)!.x} ${disp(ultimo.de)!.y})`} aria-hidden="true">
-              <circle r="30" />
-              <path d="M-11 -11L11 11M11 -11L-11 11" />
-            </g>
-          )}
-          {resultado?.status === 'entregue' && anim.passo === resultado.passos.length - 1 && !anim.tocando && disp(destino) && (
-            <g className="tp-ok" transform={`translate(${disp(destino)!.x} ${disp(destino)!.y})`} aria-hidden="true">
-              <circle r="30" />
-            </g>
-          )}
-          <g ref={pacote} className="tp-pacote" style={{ opacity: 0, color: passoAtual?.acao === 'descartou' ? '#ff3b5c' : corPacote }} aria-hidden="true">
-            <circle r="13" className="brilho" />
-            <circle r="6" />
+      {topoEfetiva.enlaces.map((e) => {
+        const a = disp(e.a);
+        const b = disp(e.b);
+        if (!a || !b) return null;
+        const cls = ['tp-enlace', !e.ativo && 'caido', percorridos.has(e.id) && 'rota', sel?.id === e.id && 'sel'].filter(Boolean).join(' ');
+        return (
+          <g key={e.id}>
+            <line className={cls} x1={a.x} y1={a.y} x2={b.x} y2={b.y} style={percorridos.has(e.id) ? { stroke: corPacote } : undefined} />
+            <line className="tp-enlace-alvo" x1={a.x} y1={a.y} x2={b.x} y2={b.y} onClick={() => setSel({ tipo: 'e', id: e.id })} />
+            <text className="tp-ms" x={(a.x + b.x) / 2} y={(a.y + b.y) / 2 - 6}>
+              {e.ativo ? `${e.ms} ms` : '✕ caído'}
+            </text>
           </g>
-        </svg>
+        );
+      })}
+
+      {topoEfetiva.disps.map((d) => (
+        <g
+          key={d.id}
+          className={['tp-disp', `tp-d-${d.tipo}`, !d.ligado && 'off', sel?.id === d.id && 'sel', pendente === d.id && 'pendente'].filter(Boolean).join(' ')}
+          transform={`translate(${d.x} ${d.y})`}
+          tabIndex={0}
+          role="button"
+          aria-label={`${ROTULO_TIPO[d.tipo]} ${d.nome}${d.ip ? `, IP ${d.ip}` : ''}${d.ligado ? '' : ', desligado'}`}
+          aria-pressed={sel?.id === d.id}
+          onPointerDown={(e) => baixo(e, d)}
+          onPointerMove={mover}
+          onPointerUp={() => cima(d)}
+          onKeyDown={(e) => teclado(e, d)}
+        >
+          <circle className="tp-halo" r="34" />
+          <Icone tipo={d.tipo} />
+          <text className="tp-nome" y="40">{d.nome}</text>
+          {d.ip && <text className="tp-ip" y="52">{d.ip}</text>}
+          {d.tipo === 'firewall' && (d.bloqueia?.length ?? 0) > 0 && <text className="tp-regra" y="-24">bloqueia {d.bloqueia!.join(', ')}</text>}
+        </g>
+      ))}
+
+      {caiu && ultimo && disp(ultimo.de) && (
+        <g className="tp-x" transform={`translate(${disp(ultimo.de)!.x} ${disp(ultimo.de)!.y})`} aria-hidden="true">
+          <circle r="30" />
+          <path d="M-11 -11L11 11M11 -11L-11 11" />
+        </g>
+      )}
+      {resultado?.status === 'entregue' && anim.passo === resultado.passos.length - 1 && !anim.tocando && disp(destino) && (
+        <g className="tp-ok" transform={`translate(${disp(destino)!.x} ${disp(destino)!.y})`} aria-hidden="true">
+          <circle r="30" />
+        </g>
+      )}
+      <g ref={pacote} className="tp-pacote" style={{ opacity: 0, color: passoAtual?.acao === 'descartou' ? '#ff3b5c' : corPacote }} aria-hidden="true">
+        <circle r="13" className="brilho" />
+        <circle r="6" />
+      </g>
+    </svg>
   );
+
+  const composicao = useMemo(
+    () =>
+      TIPOS.map((t) => ({
+        tipo: t,
+        rotulo: ROTULO_TIPO[t],
+        cor: COR_TIPO[t],
+        qtd: topo.disps.filter((d) => d.tipo === t).length,
+      })).filter((x) => x.qtd > 0),
+    [topo.disps],
+  );
+  const dispLigados = topoEfetiva.disps.filter((d) => d.ligado).length;
 
   return (
     <div className="tp-raiz" role="group" aria-label={rotulo}>
@@ -366,6 +495,21 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
           <button className={vista === '2d' ? 'ativo' : ''} aria-pressed={vista === '2d'} onClick={() => setVista('2d')}>
             2D
           </button>
+          {vista === '3d' && (
+            <button onClick={() => setNoite((v) => !v)} aria-pressed={noite} title="Alternar iluminação clara e escura na cena 3D">
+              {noite ? '☀ Claro' : '☾ Escuro'}
+            </button>
+          )}
+        </div>
+        <div className="tp-grupo" role="group" aria-label="Telemetria">
+          <button
+            className={`tp-pill-vivo ${aoVivo ? 'on' : ''}`}
+            aria-pressed={aoVivo}
+            onClick={() => setAoVivo((v) => !v)}
+            title="Ativar/pausar telemetria de vazão (Mbps), latência e CPU"
+          >
+            ● Dados ao vivo
+          </button>
         </div>
         <div className="tp-grupo">
           <button onClick={() => (editar(() => topologiaExemplo()), setSel(null))}>Exemplo</button>
@@ -375,20 +519,86 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
       </div>
 
       <div className="tp-corpo">
-        {vista === '3d' ? (
-          <Cena3DSegura<Omit<Props3D, 'aoFalhar'>>
-            className="tp-vista3d"
-            carregar={carregar3d}
-            props={props3d}
-            fallback={svgPlano}
-            cenaComMovimentoReduzido
-            rotulo={`${rotulo} (vista 3D)`}
-            aspecto="760 / 480"
-            margem="0px"
-          />
-        ) : (
-          svgPlano
-        )}
+        <div className="tp-palco-wrap">
+          {vista === '3d' ? (
+            <Cena3DSegura<Omit<Props3D, 'aoFalhar'>>
+              className="tp-vista3d"
+              carregar={carregar3d}
+              props={props3d}
+              fallback={svgPlano}
+              cenaComMovimentoReduzido
+              rotulo={`${rotulo} (vista 3D)`}
+              aspecto="760 / 480"
+              margem="0px"
+            />
+          ) : (
+            svgPlano
+          )}
+
+          {/* Painel HUD executivo de telemetria NOC (compacto por padrão para não cobrir os equipamentos 3D) */}
+          {vista === '3d' && (
+            <aside className={`tp-card-rede ${resumoAberto ? '' : 'fechado'}`} aria-label="Resumo da topologia de rede">
+              <div className="tp-cr-topo">
+                <span className="tp-cr-logo" aria-hidden="true">⌬</span>
+                <div>
+                  <strong>NOC · Sala Cofre</strong>
+                  <small>
+                    {aoVivo
+                      ? `● ${dispLigados}/${topo.disps.length} ativos · ${totalMbps} Mbps · Pico ${maxUtilPct}%`
+                      : `${dispLigados}/${topo.disps.length} ativos · Modo estático`}
+                  </small>
+                </div>
+                <button
+                  className="tp-cr-min"
+                  onClick={() => setResumoAberto((v) => !v)}
+                  aria-label={resumoAberto ? 'Recolher resumo' : 'Expandir resumo'}
+                  title={resumoAberto ? 'Recolher detalhes' : 'Expandir gráficos de telemetria'}
+                >
+                  {resumoAberto ? '−' : '+'}
+                </button>
+              </div>
+              {resumoAberto && (
+                <>
+                  <div className="tp-cr-kpis">
+                    <div>
+                      <small>Ativos</small>
+                      <b>{dispLigados}/{topo.disps.length}</b>
+                      <span>{topo.enlaces.length} cabos</span>
+                    </div>
+                    <div>
+                      <small>Vazão</small>
+                      <b>{aoVivo ? `${totalMbps}` : '—'}</b>
+                      <SparkMini valores={histTotalMbps} cor="#4f46e5" />
+                    </div>
+                    <div>
+                      <small>Uso máx.</small>
+                      <b>{aoVivo ? `${maxUtilPct}%` : '—'}</b>
+                      <SparkMini
+                        valores={topCarregados[0] ? (tel.hist[topCarregados[0].id] ?? []) : []}
+                        cor={maxUtilPct > 80 ? '#ef4444' : '#10b981'}
+                      />
+                    </div>
+                  </div>
+                  <div className="tp-cr-mix">
+                    <div className="tp-cr-barra" aria-hidden="true">
+                      {composicao.map((c) => (
+                        <span key={c.tipo} style={{ flex: c.qtd, background: c.cor }} title={`${c.rotulo}: ${c.qtd}`} />
+                      ))}
+                    </div>
+                    <div className="tp-cr-itens">
+                      {composicao.map((c) => (
+                        <span key={c.tipo}>
+                          <i style={{ background: c.cor }} aria-hidden="true" />
+                          {c.rotulo} <b>{c.qtd}</b>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </aside>
+          )}
+        </div>
 
         <aside className="tp-lateral">
           <section className="tp-painel" aria-label="Enviar pacote">
@@ -457,6 +667,12 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
               {dSel && (
                 <>
                   <h2>{ROTULO_TIPO[dSel.tipo].toUpperCase()}</h2>
+                  {aoVivo && tel.disps[dSel.id] && (
+                    <div className="tp-metricas-vivo">
+                      <span>CPU: <b>{tel.disps[dSel.id].cpuPct ?? 0}%</b></span>
+                      <span>Resposta: <b>{tel.disps[dSel.id].ms ?? 0} ms</b></span>
+                    </div>
+                  )}
                   <label>
                     Nome
                     <input value={dSel.nome} onChange={(e) => atualizarDisp(dSel.id, { nome: e.target.value })} />
@@ -492,9 +708,26 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
                 <>
                   <h2>ENLACE</h2>
                   <p className="tp-sub">{disp(eSel.a)?.nome} ↔ {disp(eSel.b)?.nome}</p>
+                  {aoVivo && (
+                    <div className="tp-metricas-vivo">
+                      <span>Vazão: <b>{tel.enlaces[eSel.id]?.mbps ?? 0} / {eSel.mbpsMax ?? 100} Mbps ({Math.round(utilizacao(tel.enlaces[eSel.id]?.mbps ?? 0, eSel.mbpsMax) * 100)}%)</b></span>
+                      <span>Perda: <b>{tel.enlaces[eSel.id]?.perdaPct ?? 0}%</b></span>
+                    </div>
+                  )}
                   <label>
                     Latência (ms)
                     <input type="number" min={1} max={500} value={eSel.ms} onChange={(e) => editar((t) => ({ ...t, enlaces: t.enlaces.map((x) => (x.id === eSel.id ? { ...x, ms: Math.max(1, Number(e.target.value) || 1) } : x)) }))} />
+                  </label>
+                  <label>
+                    Capacidade (Mbps)
+                    <input
+                      type="number"
+                      min={10}
+                      max={10000}
+                      step={10}
+                      value={eSel.mbpsMax ?? 100}
+                      onChange={(e) => editar((t) => ({ ...t, enlaces: t.enlaces.map((x) => (x.id === eSel.id ? { ...x, mbpsMax: Math.max(10, Number(e.target.value) || 100) } : x)) }))}
+                    />
                   </label>
                   <label className="tp-check">
                     <input type="checkbox" checked={eSel.ativo} onChange={(e) => editar((t) => ({ ...t, enlaces: t.enlaces.map((x) => (x.id === eSel.id ? { ...x, ativo: e.target.checked } : x)) }))} /> Enlace ativo
@@ -504,6 +737,47 @@ export function Topologia({ inicial, rotulo = 'Editor de topologia de rede com s
               )}
             </section>
           )}
+
+          <section className="tp-painel" aria-label="Telemetria ao vivo">
+            <h2>DADOS AO VIVO {aoVivo ? `· ${estadoFonte.fase} (${tel.recebidas})` : '· PAUSADO'}</h2>
+            <label>
+              Fonte de telemetria
+              <select value={tipoFonte} onChange={(e) => setTipoFonte(e.target.value as typeof tipoFonte)}>
+                <option value="simulada">Simulada (no navegador)</option>
+                <option value="sse">SSE (ponte local)</option>
+                <option value="ws">WebSocket</option>
+                <option value="polling">HTTP Polling</option>
+              </select>
+            </label>
+            {tipoFonte !== 'simulada' && (
+              <label>
+                URL da fonte
+                <input value={urlFonte} onChange={(e) => setUrlFonte(e.target.value)} placeholder="http://127.0.0.1:5181/eventos" />
+              </label>
+            )}
+            {aoVivo && topCarregados.length > 0 && (
+              <ul className="tp-enlaces-lista">
+                {topCarregados.map((r) => {
+                  const e = topoEfetiva.enlaces.find((x) => x.id === r.id);
+                  if (!e) return null;
+                  const pct = Math.min(100, Math.round(r.util * 100));
+                  return (
+                    <li key={r.id}>
+                      <button onClick={() => setSel({ tipo: 'e', id: r.id })}>
+                        <div className="tp-enlace-cab">
+                          <span>{disp(e.a)?.nome} ↔ {disp(e.b)?.nome}</span>
+                          <b>{r.mbps} Mbps ({pct}%)</b>
+                        </div>
+                        <div className="tp-enlace-barra">
+                          <span style={{ width: `${pct}%`, background: corUtilizacao(r.util) }} />
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
 
           {avisos.length > 0 && (
             <section className="tp-painel tp-avisos" aria-label="Avisos da topologia">
