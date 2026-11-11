@@ -45,11 +45,19 @@ Uma skill nova só entra se:
   "versao": "0.1.0",
   "licencas": ["MIT"],
   "dependencias": [],
+  "dependenciasExemplo": [],
   "compatibilidade": { "claude-code": "verificado", "codex": "a confirmar" }
 }
 ```
 
 `compatibilidade` só marca **"verificado"** onde houve teste registrado; o resto fica **"a confirmar"**.
+
+### Dependências entre skills (verificado pelo validador)
+
+- `dependencias`: skills de que o `SKILL.md`, o `motor/` e o `kit/` precisam. Instalar a skill traz estas junto.
+- `dependenciasExemplo`: skills importadas **só** por `exemplo/`. Servem para o exemplo rodar e não contam para a instalação mínima (`--sem-exemplos`).
+- Todo `import` de outra pasta `anim3d-*` (ou do alias `@anim3d/kit`, que é `anim3d-fundamentos`) tem de estar declarado; **ciclos em `dependencias` são erro**. Um exemplo que precisa de várias skills fica na de nível mais baixo e declara as de cima em `dependenciasExemplo`.
+- Texto livre em `dependencias` não é aceito: só nomes de skills existentes.
 
 ## Regras de conteúdo
 
@@ -67,4 +75,5 @@ Uma skill nova só entra se:
 3. Crie o `skill.meta.json`.
 4. `npm run verificar` verde.
 5. Acrescente a linha no roteador (`anim3d-roteador/SKILL.md`) e no README.
-6. Copie para `~/.claude/skills/` (ou use o instalador, quando existir).
+6. Instale com `npm run instalar -- <skill>` (resolve dependências, `--dry-run` simula, nunca sobrescreve sem `--force`, `--sem-exemplos` instala o mínimo).
+7. Acrescente 2 a 3 pedidos em `evals/roteamento.json` e rode `npm run avaliar:roteamento`.

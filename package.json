@@ -10,7 +10,10 @@
   "scripts": {
     "typecheck": "node scripts/garantir-dados.mjs && tsc -p tsconfig.json",
     "test": "node scripts/garantir-dados.mjs && vitest run",
-    "verificar": "npm run typecheck && npm test && npm run validar:skills",
+    "verificar": "npm run typecheck && npm test && npm run testar:scripts && npm run validar:skills",
+    "testar:scripts": "node --test scripts/instalar.test.mjs",
+    "instalar": "node scripts/instalar.mjs",
+    "avaliar:roteamento": "node scripts/avaliar-roteamento.mjs",
     "demo": "node scripts/garantir-dados.mjs && vite --config demo/vite.config.ts --open /",
     "validar:skills": "node scripts/validar-skills.mjs",
     "dados": "node anim3d-mapas/exemplo/dados/gerar-dados.mjs"

@@ -1,0 +1,18 @@
+{
+  "nome": "anim3d-mobile",
+  "versao": "0.1.0",
+  "descricao": "Animação 3D para React Native e web mobile: orçamento, gestos, bateria.",
+  "licencas": [
+    "MIT"
+  ],
+  "dependencias": [
+    "anim3d-fundamentos"
+  ],
+  "compatibilidade": {
+    "claude-code": "a confirmar",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  }
+}

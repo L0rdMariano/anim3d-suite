@@ -73,22 +73,28 @@ No Windows também dá para clicar duas vezes em `iniciar-demo.cmd`.
 
 ## Instalar as skills no Claude Code
 
-As skills se referenciam por caminho relativo (`../anim3d-fundamentos/kit/`), então copie **todas** as pastas `anim3d-*` lado a lado.
+As skills se referenciam por caminho relativo e algumas dependem de outras (declarado em `skill.meta.json`). Use o instalador: ele traz as dependências sozinho, **simula com `--dry-run`** e **nunca sobrescreve** uma cópia diferente sem `--force`. Não faz chamadas de rede nem executa código das skills.
 
 ```bash
-# macOS / Linux: global (todos os projetos)
-cp -r anim3d-* ~/.claude/skills/
+# todas, no Claude Code global (padrão: ~/.claude/skills)
+npm run instalar -- --todas
 
-# ou só num projeto
-mkdir -p .claude/skills && cp -r anim3d-* .claude/skills/
-```
+# só uma (as dependências vêm junto), simulando antes
+npm run instalar -- anim3d-infra-validacao --dry-run
+npm run instalar -- anim3d-infra-validacao
 
-```powershell
-# Windows (PowerShell)
-Get-ChildItem -Directory anim3d-* | Copy-Item -Recurse -Destination "$env:USERPROFILE\.claude\skills"
+# num projeto, sem as pastas exemplo/ (instalação mínima)
+npm run instalar -- anim3d-wifi-rf --destino .claude/skills --sem-exemplos
+
+# atualizar cópias que divergiram da fonte
+npm run instalar -- --todas --force
 ```
 
 Depois peça normalmente, por exemplo *"cria um hero 3D leve pra landing"*, *"quero um gráfico 3D no painel de vendas"* ou *"loader 3D no botão salvar"*. O **`anim3d-roteador`** entra primeiro e decide o caminho, inclusive quando a resposta certa é **não usar 3D**.
+
+## Medir se as skills disparam
+
+`npm run avaliar:roteamento` roda `evals/roteamento.json` (pedidos em português × skill esperada) contra as `description` das skills. É um **proxy lexical**: acusa descrição que colide ou não traz as palavras que o usuário diria, mas **não** substitui testar com o agente de verdade. Acrescente um caso sempre que uma skill falhar em disparar.
 
 ## As skills
 
@@ -102,6 +108,14 @@ Depois peça normalmente, por exemplo *"cria um hero 3D leve pra landing"*, *"qu
 | [`anim3d-app-ui`](anim3d-app-ui/SKILL.md) | Micro-interações: durações, easing, CSS 3D, loaders que não piscam. |
 | [`anim3d-performance-a11y`](anim3d-performance-a11y/SKILL.md) | Fallback, movimento reduzido, bundle, medição e o verificador em navegador real. |
 | [`anim3d-assets`](anim3d-assets/SKILL.md) | Procedural ou GLB, compressão, carregamento, licença. |
+| [`anim3d-estilos`](anim3d-estilos/SKILL.md) | Escolher e fixar o visual (luz, material, paleta, câmera) antes do código. |
+| [`anim3d-motion`](anim3d-motion/SKILL.md) | Duração, easing, mola e coreografia, com motor testado. |
+| [`anim3d-mapas`](anim3d-mapas/SKILL.md) | Globo e mapas interativos, mapa do Brasil (IBGE), arcos de fluxo. |
+| [`anim3d-topologia`](anim3d-topologia/SKILL.md) | Editor e simulador de pacotes de rede, com modo depurar. |
+| [`anim3d-infra-fisica`](anim3d-infra-fisica/SKILL.md) | Rack em U, portas e cabos pela eletrocalha; exemplo de rack de empresa de médio porte. |
+| [`anim3d-rede-logica`](anim3d-rede-logica/SKILL.md) | Topologia lógica derivada dos cabos e impacto de falha por sala. |
+| [`anim3d-wifi-rf`](anim3d-wifi-rf/SKILL.md) | Cobertura Wi-Fi com paredes e andares (motor testado, sem exemplo visual ainda). |
+| [`anim3d-infra-validacao`](anim3d-infra-validacao/SKILL.md) | Regras de projeto, inventário e comparação com a rede real. |
 
 ## O kit em 30 segundos
 
@@ -162,6 +176,10 @@ anim3d-suite/
 ├── anim3d-estilos/           SKILL.md + references/ (fichas de estilo: composição, luz, material, câmera, movimento, custo)
 ├── anim3d-motion/            SKILL.md + references/ + motor/ (mola analítica, linha do tempo, testados) + exemplo/
 ├── anim3d-topologia/         SKILL.md + exemplo/ (editor de topologia de rede em 3D com vista 2D, pacote animado com rastro, modo depurar)
+├── anim3d-infra-fisica/      SKILL.md + motor/ + exemplo/ + references/ (rack de empresa de médio porte em 3D: U, portas, cabo pela eletrocalha, queda, validação)
+├── anim3d-rede-logica/       SKILL.md + motor/ (topologia lógica derivada da física, impacto de falha, descoberta)
+├── anim3d-wifi-rf/           SKILL.md + motor/ (cobertura Wi-Fi com paredes e andares)
+├── anim3d-infra-validacao/   SKILL.md + motor/ (regras de projeto, inventário, gêmeo digital)
 ├── anim3d-mobile/            SKILL.md + exemplo/ (celular)
 ├── anim3d-app-ui/            SKILL.md + exemplo/ (micro-interações)
 ├── anim3d-performance-a11y/  SKILL.md + scripts/verificar-navegador.mjs

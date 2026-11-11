@@ -1,0 +1,18 @@
+{
+  "nome": "anim3d-saas",
+  "versao": "0.1.0",
+  "descricao": "Animações 3D de marketing e produto em páginas de SaaS.",
+  "licencas": [
+    "MIT"
+  ],
+  "dependencias": [
+    "anim3d-fundamentos"
+  ],
+  "compatibilidade": {
+    "claude-code": "a confirmar",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  }
+}

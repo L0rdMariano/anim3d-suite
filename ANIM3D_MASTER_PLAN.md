@@ -37,7 +37,7 @@ O produto do anim3d-suite é o **conhecimento e o workflow** que o agente usa pa
 
 | Item | Situação |
 |---|---|
-| Skills da suíte | **10** (`anim3d-roteador`, `-fundamentos`, `-saas`, `-dashboard`, `-mobile`, `-app-ui`, `-performance-a11y`, `-assets`, `-mapas`, `-topologia`) + `cena-3d-isometrica`, que vive **só** em `~/.claude/skills` (fora da pasta fonte) |
+| Skills da suíte | **16** (`anim3d-roteador`, `-fundamentos`, `-saas`, `-dashboard`, `-mobile`, `-app-ui`, `-performance-a11y`, `-assets`, `-mapas`, `-topologia`, `-estilos`, `-motion`, `-infra-fisica`, `-rede-logica`, `-wifi-rf`, `-infra-validacao`) + `cena-3d-isometrica`, que vive **só** em `~/.claude/skills` (fora da pasta fonte) |
 | Tamanho dos `SKILL.md` | 53 a 111 linhas (média ~80) |
 | Exemplos | mapas 19 arquivos · dashboard 13 · topologia 8 · saas 2 · mobile 2 · app-ui 2 |
 | Código de exemplo + kit (sem testes) | ~8,6 mil linhas |
@@ -66,7 +66,7 @@ O produto do anim3d-suite é o **conhecimento e o workflow** que o agente usa pa
 | L4 | **Nenhum CI.** Nada roda sozinho a cada mudança | Alta |
 | L5 | **Sem regressão visual** nem checagens de movimento (saltos, loop, flicker, vazamento) | Alta |
 | L6 | **FPS nunca foi medido em GPU real.** O ambiente de desenvolvimento usa WebGL por software | Alta |
-| L7 | **Fonte e cópia instalada podem divergir** (instalação manual por `cp`); `cena-3d-isometrica` está fora da fonte | Média |
+| L7 | **Fonte e cópia instalada podem divergir** (instalação manual por `cp`); `cena-3d-isometrica` está fora da fonte | Média (**instalador entregue em 2026-11-11**: `npm run instalar`; resta trazer `cena-3d-isometrica` para a fonte) |
 | L8 | **Estrutura de skill não padronizada:** não há `references/`, `assets/`; `scripts/` só em uma skill | Média |
 | L9 | **Áreas finas:** `saas`, `mobile`, `app-ui` têm 2 arquivos de exemplo cada | Média |
 | L10 | **Nenhuma skill** de shaders, física, câmera cinematográfica, motion design (timing/coreografia), ou biblioteca de estilos | Alta |
@@ -116,7 +116,7 @@ Legenda: ✅ existe · 🟡 existe parcial · ⬜ nova. A coluna "Fase" diz quan
 | **12 Audio Reactive** | — | `anim3d-audio` ⬜ | 3 |
 | **Transversais** | `anim3d-roteador` ✅ · `anim3d-fundamentos` ✅ · `anim3d-performance-a11y` ✅ · `anim3d-assets` ✅ | `anim3d-qa` (inspeção visual, regressão, benchmark) ⬜ · `anim3d-estilos` (biblioteca de estilos) ⬜ | **1** |
 
-**Contagem honesta:** hoje 10 skills; o plano leva a ~25 skills **até a Fase 3**. A meta da proposta (50+) é horizonte de longo prazo, **condicionada à qualidade**: não se cria skill para bater número.
+**Contagem honesta:** hoje 16 skills (auditoria de 2026-11-11); o plano leva a ~25 skills **até a Fase 3**. A meta da proposta (50+) é horizonte de longo prazo, **condicionada à qualidade**: não se cria skill para bater número.
 
 **Critério para existir uma skill nova:** (1) responde a um tipo de pedido que as existentes não cobrem; (2) tem ao menos um exemplo executável; (3) tem ao menos uma "armadilha medida" que o modelo não saberia sozinho; (4) passa na ficha de avaliação (seção 7). Skill que só repete documentação oficial **não entra**.
 
@@ -359,6 +359,7 @@ As da proposta + as já vigentes em `CONTRIBUTING.md`. Para cada uma, **como é 
 |---|---|
 | `anim3d-mapas` (mapa plano e globo, países, data centers, Brasil/IBGE) | Entregue e testado |
 | `anim3d-topologia` (editor 2D/3D, pacote, depurar) | Entregue e testado |
+| `anim3d-infra-fisica`, `-rede-logica`, `-wifi-rf`, `-infra-validacao` (família "Network Infrastructure Designer": 13 especialidades propostas consolidadas em 4 skills; motores testados + exemplo 3D `RackEmpresa` na galeria) | Entregue em 2026-11-11 (v0.1.0); faltam Exploded, Walkthrough e exemplos de Wi-Fi |
 | Telemetria ao vivo (`telemetria.ts`, `fontesDados.ts`, 24 testes na topologia) | **Camada de dados pronta**; faltam a ponte local, a animação de fluxo por Mbps na tela e o painel "Dados ao vivo" |
 | `anim3d-grafos` (conceitos de visualizadores de redes multicamada) | Planejada na Fase 3; **referência com licença copyleft: só conceitos** |
 | `docs/PLANO-EVOLUCAO.md` | Anexo técnico (motor, famílias, animações) |

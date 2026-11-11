@@ -3,7 +3,7 @@
   "versao": "0.1.0",
   "descricao": "Motion design: molas analíticas, linha do tempo, coreografia, câmera e movimento reduzido, com motor testado em Node.",
   "licencas": ["MIT"],
-  "dependencias": ["@anim3d/kit (movimento.ts: EASE, lerp)"],
+  "dependencias": ["anim3d-fundamentos"],
   "compatibilidade": {
     "claude-code": "verificado",
     "codex": "a confirmar",

@@ -1,0 +1,18 @@
+{
+  "nome": "anim3d-app-ui",
+  "versao": "0.1.0",
+  "descricao": "Micro-animações 3D e pseudo-3D dentro da interface de aplicações.",
+  "licencas": [
+    "MIT"
+  ],
+  "dependencias": [
+    "anim3d-fundamentos"
+  ],
+  "compatibilidade": {
+    "claude-code": "a confirmar",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  }
+}

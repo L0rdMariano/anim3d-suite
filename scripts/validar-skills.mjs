@@ -1,14 +1,15 @@
 // Valida o padrão das skills (docs/PADRAO-DE-SKILL.md). Sem dependências. Uso: node scripts/validar-skills.mjs
-// Erros (saída 1): defeitos objetivos. Avisos: itens que skills antigas ainda não têm; skills NOVAS (fora de LEGADO) os têm como erro.
+// Erros (saída 1): defeitos objetivos. Avisos: itens conhecidos que ainda não foram resolvidos.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const raiz = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-/** Skills que existiam antes do padrão: faltas de `skill.meta.json` são aviso, não erro. */
-const LEGADO = new Set(['anim3d-roteador', 'anim3d-fundamentos', 'anim3d-saas', 'anim3d-dashboard', 'anim3d-mobile', 'anim3d-app-ui', 'anim3d-performance-a11y', 'anim3d-assets', 'anim3d-mapas', 'anim3d-topologia']);
+/** Skills anteriores ao padrão cujas faltas viram aviso. Vazio desde 2026-11-11 (todas têm skill.meta.json). */
+const LEGADO = new Set([]);
 const MAX_LINHAS = 150;
 const MARCAS = /\b(aws|amazon web services|azure|google cloud|microsoft|equinix|oracle cloud|alibaba)\b/i;
+const KIT = 'anim3d-fundamentos';
 
 const erros = [];
 const avisos = [];
@@ -26,9 +27,34 @@ function frontmatter(texto) {
   return campos;
 }
 
+/** Arquivos de código da skill (sem node_modules e sem dados gerados). */
+function codigo(dir) {
+  const out = [];
+  const visita = (d) => {
+    for (const nome of readdirSync(d)) {
+      if (nome === 'node_modules' || nome === 'dados') continue;
+      const p = join(d, nome);
+      if (statSync(p).isDirectory()) visita(p);
+      else if (/\.(ts|tsx|mjs)$/.test(nome)) out.push(p);
+    }
+  };
+  visita(dir);
+  return out;
+}
+
+/** Skills que o código de `arquivo` importa (outras pastas anim3d-* ou o alias do kit). */
+function importados(arquivo, dono) {
+  const txt = readFileSync(arquivo, 'utf8');
+  const achados = new Set();
+  for (const m of txt.matchAll(/from\s+'((?:\.\.\/)+)(anim3d-[a-z0-9-]+)\//g)) if (m[2] !== dono) achados.add(m[2]);
+  if (dono !== KIT && /from\s+'@anim3d\/kit(\/[\w-]+)?'/.test(txt)) achados.add(KIT);
+  return achados;
+}
+
 const skills = readdirSync(raiz)
   .filter((d) => d.startsWith('anim3d-') && statSync(join(raiz, d)).isDirectory() && existsSync(join(raiz, d, 'SKILL.md')))
   .sort();
+const metas = new Map();
 
 for (const nome of skills) {
   const dir = join(raiz, nome);
@@ -67,10 +93,54 @@ for (const nome of skills) {
     try {
       const j = JSON.parse(readFileSync(meta, 'utf8'));
       for (const c of ['versao', 'licencas', 'dependencias', 'compatibilidade']) if (!(c in j)) erro(nome, `skill.meta.json sem o campo "${c}"`);
+      if (j.nome && j.nome !== nome) erro(nome, `skill.meta.json "nome" (${j.nome}) difere da pasta`);
+      metas.set(nome, j);
     } catch {
       erro(nome, 'skill.meta.json não é JSON válido');
     }
   }
+}
+
+// --- dependências entre skills: declaradas, existentes, sem ciclo, e iguais ao que o código realmente importa
+for (const nome of skills) {
+  const j = metas.get(nome);
+  if (!j) continue;
+  const exec = j.dependencias ?? [];
+  const exemplo = j.dependenciasExemplo ?? [];
+  for (const d of [...exec, ...exemplo]) if (!skills.includes(d)) erro(nome, `dependência "${d}" não existe`);
+  if (exec.includes(nome) || exemplo.includes(nome)) erro(nome, 'depende de si mesma');
+
+  for (const arq of codigo(join(raiz, nome))) {
+    const rel = relative(join(raiz, nome), arq).replace(/\\/g, '/');
+    const emExemplo = rel.startsWith('exemplo/');
+    const permitido = new Set(emExemplo ? [...exec, ...exemplo] : exec);
+    for (const usado of importados(arq, nome)) {
+      if (!permitido.has(usado)) erro(nome, `${rel} importa ${usado}, que não está em "${emExemplo ? 'dependencias/dependenciasExemplo' : 'dependencias'}" do skill.meta.json`);
+    }
+  }
+}
+// ciclos só nas dependências de execução (dependenciasExemplo pode apontar "para cima" sem formar ciclo de instalação mínima)
+const estado = new Map();
+const visita = (n, caminho) => {
+  if (estado.get(n) === 2) return;
+  if (estado.get(n) === 1) { erro(n, `ciclo de dependências: ${[...caminho, n].join(' → ')}`); return; }
+  estado.set(n, 1);
+  for (const d of metas.get(n)?.dependencias ?? []) if (metas.has(d)) visita(d, [...caminho, n]);
+  estado.set(n, 2);
+};
+for (const n of metas.keys()) visita(n, []);
+
+// --- cores hex soltas (regra: tokens). Ignora preto/branco e a linha do mapa de valores padrão do useTokens (PADRAO)
+for (const nome of skills) {
+  let total = 0;
+  for (const arq of codigo(join(raiz, nome))) {
+    if (/\.test\./.test(arq) || !/\.tsx?$/.test(arq)) continue;
+    for (const linha of readFileSync(arq, 'utf8').split('\n')) {
+      if (/PADRAO|anim3d-hex-ok/.test(linha)) continue;
+      total += [...linha.matchAll(/#[0-9a-fA-F]{6}\b/g)].filter((m) => !/^#(000000|ffffff)$/i.test(m[0])).length;
+    }
+  }
+  if (total) aviso(nome, `${total} cor(es) hex soltas no código (regra: tokens via useTokens; valores padrão do useTokens ficam numa linha com PADRAO)`);
 }
 
 console.log(`Skills verificadas: ${skills.length}`);

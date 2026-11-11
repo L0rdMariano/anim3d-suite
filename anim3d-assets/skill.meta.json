@@ -1,0 +1,16 @@
+{
+  "nome": "anim3d-assets",
+  "versao": "0.1.0",
+  "descricao": "Pipeline de assets 3D: procedural, glTF, compressão, carregamento.",
+  "licencas": [
+    "MIT"
+  ],
+  "dependencias": [],
+  "compatibilidade": {
+    "claude-code": "a confirmar",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  }
+}

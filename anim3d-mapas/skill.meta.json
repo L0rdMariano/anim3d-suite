@@ -1,0 +1,22 @@
+{
+  "nome": "anim3d-mapas",
+  "versao": "0.1.0",
+  "descricao": "Globo e mapas interativos, mapa do Brasil (IBGE), arcos de fluxo.",
+  "licencas": [
+    "MIT",
+    "ODbL-1.0 (paises.json derivado, não versionado: ver THIRD_PARTY_NOTICES.md)"
+  ],
+  "dependencias": [
+    "anim3d-fundamentos"
+  ],
+  "dependenciasExemplo": [
+    "anim3d-saas"
+  ],
+  "compatibilidade": {
+    "claude-code": "a confirmar",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  }
+}
