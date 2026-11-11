@@ -57,15 +57,15 @@ Requisito: **Node.js 22+**.
 git clone https://github.com/L0rdMariano/anim3d-suite.git anim3d-suite
 cd anim3d-suite
 npm install
-npm run demo          # abre http://localhost:5180/
+npm run demo          # abre a galeria em http://localhost:5180/
 ```
 
 No Windows também dá para clicar duas vezes em `iniciar-demo.cmd`.
 
 | Página | Conteúdo |
 |---|---|
-| `http://localhost:5180/` | Almoxarifado 3D (app de tela cheia) |
-| `http://localhost:5180/galeria.html` | Galeria: um exemplo por vez, com o código de uso para copiar. Link direto: `#globo`, `#celular`… |
+| `http://localhost:5180/` | **Galeria de exemplos** (página principal): um exemplo por vez, com o código de uso para copiar. Link direto: `#comando`, `#brasil`, `#globo`, `#celular`… |
+| `http://localhost:5180/almoxarifado.html` | Almoxarifado 3D (app de tela cheia) |
 
 > **Sobre "reduzir movimento":** a suíte respeita essa preferência do sistema (padrão ligado em Windows Server e VMs), mostrando versões estáticas. Como a demo existe para mostrar animação, **ela ignora a preferência por padrão**. Para ver como fica para quem usa "reduzir movimento", acrescente `?respeitar=1` à URL (ou use o botão no topo da galeria).
 >
@@ -73,22 +73,28 @@ No Windows também dá para clicar duas vezes em `iniciar-demo.cmd`.
 
 ## Instalar as skills no Claude Code
 
-As skills se referenciam por caminho relativo (`../anim3d-fundamentos/kit/`), então copie **todas** as pastas `anim3d-*` lado a lado.
+As skills se referenciam por caminho relativo e algumas dependem de outras (declarado em `skill.meta.json`). Use o instalador: ele traz as dependências sozinho, **simula com `--dry-run`** e **nunca sobrescreve** uma cópia diferente sem `--force`. Não faz chamadas de rede nem executa código das skills.
 
 ```bash
-# macOS / Linux: global (todos os projetos)
-cp -r anim3d-* ~/.claude/skills/
+# todas, no Claude Code global (padrão: ~/.claude/skills)
+npm run instalar -- --todas
 
-# ou só num projeto
-mkdir -p .claude/skills && cp -r anim3d-* .claude/skills/
-```
+# só uma (as dependências vêm junto), simulando antes
+npm run instalar -- anim3d-infra-validacao --dry-run
+npm run instalar -- anim3d-infra-validacao
 
-```powershell
-# Windows (PowerShell)
-Get-ChildItem -Directory anim3d-* | Copy-Item -Recurse -Destination "$env:USERPROFILE\.claude\skills"
+# num projeto, sem as pastas exemplo/ (instalação mínima)
+npm run instalar -- anim3d-wifi-rf --destino .claude/skills --sem-exemplos
+
+# atualizar cópias que divergiram da fonte
+npm run instalar -- --todas --force
 ```
 
 Depois peça normalmente, por exemplo *"cria um hero 3D leve pra landing"*, *"quero um gráfico 3D no painel de vendas"* ou *"loader 3D no botão salvar"*. O **`anim3d-roteador`** entra primeiro e decide o caminho, inclusive quando a resposta certa é **não usar 3D**.
+
+## Medir se as skills disparam
+
+`npm run avaliar:roteamento` roda `evals/roteamento.json` (pedidos em português × skill esperada) contra as `description` das skills. É um **proxy lexical**: acusa descrição que colide ou não traz as palavras que o usuário diria, mas **não** substitui testar com o agente de verdade. Acrescente um caso sempre que uma skill falhar em disparar.
 
 ## As skills
 
@@ -102,6 +108,14 @@ Depois peça normalmente, por exemplo *"cria um hero 3D leve pra landing"*, *"qu
 | [`anim3d-app-ui`](anim3d-app-ui/SKILL.md) | Micro-interações: durações, easing, CSS 3D, loaders que não piscam. |
 | [`anim3d-performance-a11y`](anim3d-performance-a11y/SKILL.md) | Fallback, movimento reduzido, bundle, medição e o verificador em navegador real. |
 | [`anim3d-assets`](anim3d-assets/SKILL.md) | Procedural ou GLB, compressão, carregamento, licença. |
+| [`anim3d-estilos`](anim3d-estilos/SKILL.md) | Escolher e fixar o visual (luz, material, paleta, câmera) antes do código. |
+| [`anim3d-motion`](anim3d-motion/SKILL.md) | Duração, easing, mola e coreografia, com motor testado. |
+| [`anim3d-mapas`](anim3d-mapas/SKILL.md) | Globo e mapas interativos, mapa do Brasil (IBGE), arcos de fluxo. |
+| [`anim3d-topologia`](anim3d-topologia/SKILL.md) | Editor e simulador de pacotes de rede, com modo depurar. |
+| [`anim3d-infra-fisica`](anim3d-infra-fisica/SKILL.md) | Rack em U, portas e cabos pela eletrocalha; exemplo de rack de empresa de médio porte. |
+| [`anim3d-rede-logica`](anim3d-rede-logica/SKILL.md) | Topologia lógica derivada dos cabos e impacto de falha por sala. |
+| [`anim3d-wifi-rf`](anim3d-wifi-rf/SKILL.md) | Cobertura Wi-Fi com paredes e andares; exemplo com planta, APs arrastáveis e 2,4 × 5 GHz. |
+| [`anim3d-infra-validacao`](anim3d-infra-validacao/SKILL.md) | Regras de projeto, inventário e comparação com a rede real. |
 
 ## O kit em 30 segundos
 
@@ -144,8 +158,8 @@ export default function MinhaCena({ aoFalhar, movimentoReduzido, ...dados }: Dad
 ## Qualidade
 
 ```bash
-npm run verificar     # typecheck strict + 29 testes (kit + simulação do almoxarifado)
-node anim3d-performance-a11y/scripts/verificar-navegador.mjs http://localhost:5180/ --larguras 1856,1440,768,390
+npm run verificar     # typecheck strict + testes (kit, simulações, dados, motor de movimento) + validador do padrão de skills
+node anim3d-performance-a11y/scripts/verificar-navegador.mjs http://localhost:5180/almoxarifado.html --larguras 1856,1440,768,390
 ```
 
 O verificador abre um Chrome headless via DevTools Protocol, sem dependências. Ele captura PNGs por largura e falha se houver rolagem horizontal, erro de console ou tabela "invisível" esticando a página. Há também evals das skills em [`anim3d-roteador/evals/`](anim3d-roteador/evals/), rodáveis com `claude plugin eval`.
@@ -158,13 +172,25 @@ anim3d-suite/
 ├── anim3d-fundamentos/       SKILL.md + kit/ (src, testes, README)
 ├── anim3d-saas/              SKILL.md + exemplo/ (globo)
 ├── anim3d-dashboard/         SKILL.md + exemplo/ (almoxarifado/, ecossistema, colunas)
+├── anim3d-mapas/             SKILL.md + exemplo/ (centro de comando, globo com países, mapa do Brasil/IBGE, dados/)
+├── anim3d-estilos/           SKILL.md + references/ (fichas de estilo: composição, luz, material, câmera, movimento, custo)
+├── anim3d-motion/            SKILL.md + references/ + motor/ (mola analítica, linha do tempo, testados) + exemplo/
+├── anim3d-topologia/         SKILL.md + exemplo/ (editor de topologia de rede em 3D com vista 2D, pacote animado com rastro, modo depurar)
+├── anim3d-infra-fisica/      SKILL.md + motor/ + exemplo/ + references/ (rack de empresa de médio porte em 3D: U, portas, cabo pela eletrocalha, queda, validação)
+├── anim3d-rede-logica/       SKILL.md + motor/ (topologia lógica derivada da física, impacto de falha, descoberta)
+├── anim3d-wifi-rf/           SKILL.md + motor/ + exemplo/ (cobertura Wi-Fi com paredes e andares, planta com APs arrastáveis)
+├── anim3d-infra-validacao/   SKILL.md + motor/ (regras de projeto, inventário, gêmeo digital)
 ├── anim3d-mobile/            SKILL.md + exemplo/ (celular)
 ├── anim3d-app-ui/            SKILL.md + exemplo/ (micro-interações)
 ├── anim3d-performance-a11y/  SKILL.md + scripts/verificar-navegador.mjs
 ├── anim3d-assets/            SKILL.md
-├── demo/                     almoxarifado (index.html) e galeria (galeria.html)
+├── demo/                     galeria (index.html, página principal) e almoxarifado (almoxarifado.html)
 └── docs/img/                 capturas usadas neste README
 ```
+
+## Dados de terceiros
+
+Os dados de países (nomes, capitais, idiomas, moedas, fronteiras) vêm de uma base com licença **ODbL** e por isso o arquivo derivado `paises.json` **não é versionado**: é gerado localmente. Você não precisa fazer nada: `npm test` e `npm run demo` geram uma versão mínima, sem rede. Para incluir a população (Banco Mundial), rode `npm run dados` com internet. Detalhes e atribuições em [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Quer ajudar?
 

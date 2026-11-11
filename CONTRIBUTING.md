@@ -7,7 +7,7 @@ Obrigado por querer melhorar a anim3d! Este guia cabe em 3 minutos.
 ```bash
 npm install
 npm run verificar   # typecheck + testes: deve passar antes e depois da sua mudança
-npm run demo        # http://localhost:5180/ (almoxarifado) e /galeria.html
+npm run demo        # http://localhost:5180/ (galeria de exemplos) e /almoxarifado.html
 ```
 
 Requisito: Node.js 22+. A demo ignora o "reduzir movimento" do sistema por padrão; acrescente `?respeitar=1` à URL para testar o comportamento real de quem usa essa preferência.

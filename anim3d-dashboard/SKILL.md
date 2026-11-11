@@ -1,6 +1,6 @@
 ---
 name: anim3d-dashboard
-description: "3D em dashboards e painéis de dados: barras/colunas 3D, mapas, grafos de dependência, topologia, KPIs em profundidade e transições entre visões. Use ao decidir se e como usar 3D em tela de análise de dados."
+description: "3D em dashboards e painéis de dados: barras/colunas 3D, grafos de dependência, KPIs em profundidade, gêmeo digital operacional (armazém, fábrica, operação ao vivo), diagrama isométrico de arquitetura e transições entre visões. Use ao decidir se e como usar 3D em tela de análise de dados, painel de operação ou diagrama de sistema."
 ---
 
 # 3D em dashboards
@@ -78,3 +78,7 @@ O desenho é **dado, não código**. A cena recebe `{ nos, arestas, valores }`; 
 - [ ] Números exatos em HTML acessível
 - [ ] Atualização por `ref` + `invalidate`, sem re-render por tick
 - [ ] Fallback 2D completo
+
+## Mapas e globos
+
+Mapa-múndi 3D, globo com fluxos/ataques, mapa por estado (IBGE), centro de comando: use a skill `anim3d-mapas`.

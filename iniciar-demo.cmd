@@ -30,12 +30,13 @@ if not exist node_modules (
 )
 
 echo.
-echo   Almoxarifado 3D : http://localhost:5180/
-echo   Galeria         : http://localhost:5180/galeria.html
+echo   Galeria de exemplos : http://localhost:5180/
+echo   Almoxarifado 3D     : http://localhost:5180/almoxarifado.html
 echo.
 echo   O servidor desliga sozinho 15 s depois que voce fechar todas as paginas da demo.
 echo   Para parar na hora: feche esta janela ou aperte Ctrl+C.
 echo.
 set ANIM3D_FECHAR_SOZINHO=1
+node scripts\garantir-dados.mjs
 call npx vite --config demo/vite.config.ts --open "/"
 if errorlevel 1 pause
