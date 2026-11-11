@@ -30,7 +30,7 @@ Escopo: as 16 skills `anim3d-*`, README, plano mestre, galeria e cópias instala
 | 5 | Compatibilidade "verificado" só em `estilos` e `motion`; demais "a confirmar" | sem acesso a Codex, Gemini CLI e Cursor | testar quando houver acesso |
 | 6 | Projetos de inspiração do rack sem autor, URL e licença | não verificável daqui | preencher `anim3d-infra-fisica/references/inspiracoes.md` |
 | 7 | `cena-3d-isometrica` vive só em `~/.claude/skills`, fora da fonte e do instalador | pertence ao dono decidir se entra na suíte | copiar para a fonte e dar `skill.meta.json` |
-| 8 | ODbL do `paises.json` e o `git push` | decisão do dono, já registrada no plano | decidir antes de publicar |
+| 8 | `git push` | **ODbL resolvida** (arquivo fora do git e do instalador, nunca esteve no histórico, nenhum código versionado carrega a base). O push depende de autorização explícita sua: o plano (D1) registra "só em branch nova, sem force", mas a memória do projeto dizia que ainda estava pendente | confirmar a branch e fazer o push |
 
 ## O que a auditoria não cobriu
 

@@ -38,24 +38,30 @@ export function resolver(pedidas, metas, { comExemplos = true } = {}) {
   return ordem;
 }
 
-const ignorar = (rel, comExemplos) => rel.split(sep).includes('node_modules') || (!comExemplos && rel.split(sep)[0] === 'exemplo');
+/** `excluir`: caminhos (com /) que o skill.meta.json manda NÃO instalar, p.ex. dados derivados de licença copyleft gerados localmente. */
+const ignorar = (rel, comExemplos, excluir = []) => rel.split(sep).includes('node_modules') || (!comExemplos && rel.split(sep)[0] === 'exemplo') || excluir.includes(rel.split(sep).join('/'));
 
-function arquivos(dir, comExemplos, base = dir, out = []) {
+export const naoInstalarDe = (raiz, nome) => {
+  const p = join(raiz, nome, 'skill.meta.json');
+  return existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')).naoInstalar ?? []) : [];
+};
+
+function arquivos(dir, comExemplos, excluir, base = dir, out = []) {
   if (!existsSync(dir)) return out;
   for (const nome of readdirSync(dir).sort()) {
     const p = join(dir, nome);
     const rel = relative(base, p);
-    if (ignorar(rel, comExemplos)) continue;
-    if (statSync(p).isDirectory()) arquivos(p, comExemplos, base, out);
+    if (ignorar(rel, comExemplos, excluir)) continue;
+    if (statSync(p).isDirectory()) arquivos(p, comExemplos, excluir, base, out);
     else out.push(rel.split(sep).join('/'));
   }
   return out;
 }
 
 /** Impressão digital do conteúdo (caminhos + bytes), para saber se destino e fonte são iguais. */
-export function impressao(dir, comExemplos = true) {
+export function impressao(dir, comExemplos = true, excluir = []) {
   const h = createHash('sha256');
-  for (const rel of arquivos(dir, comExemplos)) h.update(rel).update(readFileSync(join(dir, ...rel.split('/'))));
+  for (const rel of arquivos(dir, comExemplos, excluir)) h.update(rel).update(readFileSync(join(dir, ...rel.split('/'))));
   return h.digest('hex');
 }
 
@@ -64,7 +70,8 @@ export function planejar(raiz, destino, lista, { comExemplos = true, force = fal
   return lista.map((nome) => {
     const alvo = join(destino, nome);
     if (!existsSync(alvo)) return { nome, estado: 'novo', copiar: true };
-    const igual = impressao(join(raiz, nome), comExemplos) === impressao(alvo, comExemplos);
+    const excluir = naoInstalarDe(raiz, nome);
+    const igual = impressao(join(raiz, nome), comExemplos, excluir) === impressao(alvo, comExemplos, excluir);
     if (igual) return { nome, estado: 'igual', copiar: false };
     return { nome, estado: 'difere', copiar: force };
   });
@@ -76,7 +83,8 @@ export function aplicar(raiz, destino, plano, { comExemplos = true } = {}) {
     if (!p.copiar) continue;
     const alvo = join(destino, p.nome);
     rmSync(alvo, { recursive: true, force: true });
-    cpSync(join(raiz, p.nome), alvo, { recursive: true, filter: (src) => !ignorar(relative(join(raiz, p.nome), src), comExemplos) });
+    const excluir = naoInstalarDe(raiz, p.nome);
+    cpSync(join(raiz, p.nome), alvo, { recursive: true, filter: (src) => !ignorar(relative(join(raiz, p.nome), src), comExemplos, excluir) });
   }
 }
 

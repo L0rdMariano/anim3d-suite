@@ -20,7 +20,7 @@ A suíte anim3d é MIT (`LICENSE`). Este arquivo registra o que vem de terceiros
 ### `world-countries` (ODbL 1.0), autor: Mohammed Le Doze (`mledoze/countries`)
 
 - É usado **somente para gerar** `anim3d-mapas/exemplo/dados/paises.json` (`npm run dados` ou a guarda automática de `npm test`/`npm run demo`).
-- Esse arquivo é uma **base derivada** e, por isso, **não é versionado neste repositório** (está no `.gitignore`).
+- Esse arquivo é uma **base derivada** e, por isso, **não é versionado neste repositório** (está no `.gitignore`) e **não é copiado pelo instalador** (`naoInstalar` em `anim3d-mapas/skill.meta.json`), para não ser redistribuído por engano numa pasta `.claude/skills` de projeto.
 - **Quem publicar uma build ou demonstração que inclua `paises.json`** deve cumprir a ODbL 1.0: atribuição ("Contém informações de mledoze/countries, licença ODbL 1.0"), manter a licença da base derivada (compartilhamento pela mesma licença) e indicar as alterações. Texto da licença: https://opendatacommons.org/licenses/odbl/1.0/
 - Sem `paises.json` a suíte continua funcionando: a guarda gera uma versão mínima sem rede (sem população).
 

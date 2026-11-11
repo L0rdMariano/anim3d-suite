@@ -330,7 +330,7 @@ As da proposta + as já vigentes em `CONTRIBUTING.md`. Para cada uma, **como é 
 | # | Decisão | Bloqueia | Recomendação |
 |---|---|---|---|
 | D1 | Autorizar `git push` do trabalho novo | Publicação | **Autorizado (2026-11-11) com a ressalva de segurança:** branch nova `evolucao-skills`, sem `force`, para revisão antes de mesclar em `main` |
-| D2 | Tratamento do ODbL do `world-countries` (L2) | Publicação | **Decidido e aplicado (2026-11-11), por segurança:** opção (b), snapshot gerado localmente e fora do git, com guarda automática e atribuições em `THIRD_PARTY_NOTICES.md` |
+| D2 | Tratamento do ODbL do `world-countries` (L2) | Publicação | **Decidido e aplicado (2026-11-11), por segurança:** opção (b), snapshot gerado localmente e fora do git, com guarda automática e atribuições em `THIRD_PARTY_NOTICES.md`. **Fechado em 2026-11-11:** o instalador não copia o arquivo (`naoInstalar` no `skill.meta.json`), a `SKILL.md` do mapas ensina a gerá-lo, e a conferência confirmou que o arquivo nunca entrou no histórico do git e que nenhum código versionado traz dados dessa base |
 | D3 | Dependências do motor (molas, linha do tempo, pós-processamento) | Fase 2 | Molas e linha do tempo próprias; pós-processamento opcional; GSAP/Theatre só com justificativa e licença confirmada (ver `PLANO-EVOLUCAO.md`) |
 | D4 | Perfis de hardware-alvo (A/B/C) | Orçamentos e fichas | Definir A e B no mínimo |
 | D5 | Quem aprova a qualidade visual | Aprovação | O dono; revisão independente por agente é auxiliar |

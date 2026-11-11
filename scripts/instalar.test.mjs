@@ -67,6 +67,19 @@ test('cópia idêntica é reconhecida e não é recopiada', () => {
   rmSync(destino, { recursive: true });
 });
 
+test('naoInstalar: arquivo listado no meta nunca é copiado e não gera "difere" eterno', () => {
+  const raiz = fonteFalsa();
+  writeFileSync(join(raiz, 'anim3d-base', 'skill.meta.json'), JSON.stringify({ dependencias: [], naoInstalar: ['exemplo/derivado.json'] }));
+  writeFileSync(join(raiz, 'anim3d-base', 'exemplo', 'derivado.json'), '{"licenca":"copyleft"}');
+  const destino = mkdtempSync(join(tmpdir(), 'anim3d-dest-'));
+  aplicar(raiz, destino, planejar(raiz, destino, ['anim3d-base']));
+  assert.ok(existsSync(join(destino, 'anim3d-base', 'exemplo', 'a.ts')));
+  assert.ok(!existsSync(join(destino, 'anim3d-base', 'exemplo', 'derivado.json')));
+  assert.equal(planejar(raiz, destino, ['anim3d-base'])[0].estado, 'igual');
+  rmSync(raiz, { recursive: true });
+  rmSync(destino, { recursive: true });
+});
+
 test('--sem-exemplos não copia a pasta exemplo e a comparação a ignora', () => {
   const raiz = fonteFalsa();
   const destino = mkdtempSync(join(tmpdir(), 'anim3d-dest-'));

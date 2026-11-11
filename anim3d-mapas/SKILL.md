@@ -29,7 +29,7 @@ simulação/eventos (TS puro, testável) ─┼─> cena 3D (só desenha) ─┐
                                        └─> HUD em HTML (texto, números, painéis)
 ```
 
-1. **Dados geográficos viram snapshot local** gerado por script (`exemplo/dados/gerar-dados.mjs`): o exemplo roda offline e o dado tem fonte e data visíveis na tela. Não dependa de API no clique do usuário.
+1. **Dados geográficos viram snapshot local** gerado por script (`exemplo/dados/gerar-dados.mjs`): o exemplo roda offline e o dado tem fonte e data visíveis na tela. **`paises.json` não é distribuído** (é derivado de uma base ODbL 1.0 e o instalador o omite): gere-o com `node exemplo/dados/gerar-dados.mjs --so-paises --offline` (ou sem `--offline`, com internet, para ter população) e, se publicar uma build que o inclua, cumpra a atribuição e o compartilhamento pela mesma licença descritos em `THIRD_PARTY_NOTICES.md` do repositório da suíte. Não dependa de API no clique do usuário.
 2. **Eventos vêm de uma função pura** (`centroComandoSim.ts`: `avancar(sim, dt)` devolve eventos; semente determinística). Trocar por dados reais = trocar quem chama. Teste em Node.
 3. **Texto e números ficam em HTML**, nunca no canvas: legível, selecionável, acessível. A cena só desenha.
 4. **O 3D roda a 60 fps sem passar pelo React.** O HUD atualiza ~3×/s por `setInterval`. Nomes de países/cidades e a linha de chamada são posicionados por `ref` + `style.transform` dentro do `useFrame`.

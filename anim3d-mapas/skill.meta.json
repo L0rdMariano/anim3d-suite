@@ -12,6 +12,9 @@
   "dependenciasExemplo": [
     "anim3d-saas"
   ],
+  "naoInstalar": [
+    "exemplo/dados/paises.json"
+  ],
   "compatibilidade": {
     "claude-code": "a confirmar",
     "codex": "a confirmar",
