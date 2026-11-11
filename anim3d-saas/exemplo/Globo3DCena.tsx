@@ -52,7 +52,7 @@ const terra = (x: number, y: number, z: number) =>
   ruido(x * 1.7 + 3, y * 1.7, z * 1.7) * 0.65 + ruido(x * 3.6, y * 3.6 + 7, z * 3.6) * 0.35;
 
 /** Pontos de terra (densos, cor cheia) e de oceano (esparsos, cor apagada): o contraste desenha os continentes. */
-function geometriaPontos(): { terra: BufferGeometry; oceano: BufferGeometry } {
+export function geometriaPontos(): { terra: BufferGeometry; oceano: BufferGeometry } {
   const N = 22000;
   const ouro = Math.PI * (3 - Math.sqrt(5));
   const t: number[] = [];
@@ -73,7 +73,7 @@ function geometriaPontos(): { terra: BufferGeometry; oceano: BufferGeometry } {
   return { terra: geo(t), oceano: geo(o) };
 }
 
-function texturaCirculo(): CanvasTexture {
+export function texturaCirculo(): CanvasTexture {
   const c = document.createElement('canvas');
   c.width = c.height = 64;
   const ctx = c.getContext('2d')!;
@@ -84,7 +84,7 @@ function texturaCirculo(): CanvasTexture {
   return new CanvasTexture(c);
 }
 
-function latLon(lat: number, lon: number, raio = R) {
+export function latLon(lat: number, lon: number, raio = R) {
   const phi = ((90 - lat) * Math.PI) / 180;
   const theta = ((lon + 180) * Math.PI) / 180;
   return new Vector3(-raio * Math.sin(phi) * Math.cos(theta), raio * Math.cos(phi), raio * Math.sin(phi) * Math.sin(theta));
@@ -101,7 +101,7 @@ const ROTAS: [string, string][] = [
   ['Cidade do México', 'São Paulo'], ['Lagos', 'Joanesburgo'], ['Santiago', 'São Paulo'], ['Londres', 'Nova York'],
 ];
 
-const atmosferaMaterial = () =>
+export const atmosferaMaterial = () =>
   new ShaderMaterial({
     uniforms: { cor: { value: new Color() } },
     vertexShader: `varying vec3 vN; varying vec3 vV;

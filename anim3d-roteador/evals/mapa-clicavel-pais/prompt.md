@@ -1,0 +1,1 @@
+preciso de um globo 3D no painel de seguranca em React + TypeScript onde eu clique num pais e apareca na direita as informacoes dele (populacao, capital, area), com arcos de ataques entre cidades. os ataques podem ser de teste por enquanto. faz o componente

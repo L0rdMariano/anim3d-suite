@@ -1,0 +1,15 @@
+{
+  "nome": "anim3d-estilos",
+  "versao": "0.1.0",
+  "descricao": "Biblioteca de estilos visuais: composição, luz, material, paleta, câmera, movimento e custo por estilo.",
+  "licencas": ["MIT"],
+  "dependencias": [],
+  "compatibilidade": {
+    "claude-code": "verificado",
+    "codex": "a confirmar",
+    "gemini-cli": "a confirmar",
+    "cursor": "a confirmar",
+    "github-copilot": "a confirmar"
+  },
+  "estilos": ["liquid-chrome", "cyber-holographic", "crystal-glass", "generative-neon", "architectural-brutalism", "organic-biomorphic", "dark-control-room", "isometric-worlds"]
+}

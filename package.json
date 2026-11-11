@@ -2,14 +2,18 @@
   "name": "anim3d-suite-dev",
   "private": true,
   "license": "MIT",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "type": "module",
   "description": "Workspace de desenvolvimento da suÃ­te anim3d: typecheck e testes do kit e dos exemplos. NÃ£o Ã© copiado na instalaÃ§Ã£o das skills.",
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "verificar": "npm run typecheck && npm test",
-    "demo": "vite --config demo/vite.config.ts --open /"
+    "typecheck": "node scripts/garantir-dados.mjs && tsc -p tsconfig.json",
+    "test": "node scripts/garantir-dados.mjs && vitest run",
+    "verificar": "npm run typecheck && npm test && npm run validar:skills",
+    "demo": "node scripts/garantir-dados.mjs && vite --config demo/vite.config.ts --open /",
+    "validar:skills": "node scripts/validar-skills.mjs",
+    "dados": "node anim3d-mapas/exemplo/dados/gerar-dados.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.8.2",
@@ -19,14 +23,19 @@
   },
   "devDependencies": {
     "@testing-library/react": "16.3.3",
+    "@types/geojson": "7946.0.16",
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/three": "0.187.0",
+    "@types/topojson-client": "3.1.5",
     "@vitejs/plugin-react": "6.3.0",
     "jsdom": "31.0.0",
+    "topojson-client": "3.1.0",
     "typescript": "7.0.2",
     "vite": "8.3.7",
-    "vitest": "5.1.0"
+    "vitest": "5.1.0",
+    "world-atlas": "2.0.2",
+    "world-countries": "5.1.0"
   }
 }

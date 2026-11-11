@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: topologia-depurar-pacote
+expected_outcome: |
+  Segue a skill anim3d-topologia: SVG para o editor, motor de rotas separado e testável, rastreio salto a salto com o motivo do descarte (enlace caído, dispositivo desligado, firewall, sem rota) em texto, modo depurar, teclado e acessibilidade.
+---
+tags: [skill-creator]
+max_turns: 40
+timeout_seconds: 1200
+allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]
+---
+
+quero uma tela tipo Cisco Packet Tracer em React + TypeScript: arrastar roteadores, switches e PCs, ligar cabos e mandar um ping animado de um PC ate um servidor. se der errado quero ver onde e porque o pacote parou. faz pra mim

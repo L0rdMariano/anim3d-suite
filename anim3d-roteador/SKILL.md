@@ -15,8 +15,16 @@ Antes de escrever código, responda estas quatro perguntas. Elas decidem tudo.
 | Painel, KPIs, mapas, grafos, métricas | `anim3d-dashboard` | Revelar estrutura; nunca decorar |
 | App nativo ou web mobile | `anim3d-mobile` | Leve, tátil, sem esgotar bateria |
 | Loader, estado vazio, transição, micro-interação | `anim3d-app-ui` | Dar feedback, durar < 1 s |
+| Mapa, globo, mapa-múndi, mapa do Brasil, centro de comando, fluxos entre lugares | `anim3d-mapas` | Localizar, comparar e acompanhar fluxos |
+| Escolher o visual ou 'estilo' (premium, futurista, vidro, neon, orgânico, brutalista, sala de controle...) | `anim3d-estilos` | Fixar luz, material, paleta e câmera antes do código |
+| Qualquer animação: timing, easing, mola, coreografia, câmera, loop, movimento reduzido | `anim3d-motion` | Movimento com personalidade, sem salto e sem depender do FPS |
+| Topologia de rede, simulador de pacotes, estilo Packet Tracer, troubleshooting | `anim3d-topologia` | Montar a rede e entender onde o pacote para |
 | Diagrama isométrico de arquitetura/fluxo | `anim3d-dashboard` (exemplo `Ecossistema3D`) | Explicar sistema |
 | Gêmeo digital / operação ao vivo (armazém, fábrica) | `anim3d-dashboard` (exemplo `almoxarifado/`) | Explorar e acompanhar |
+
+Para qualquer coisa geográfica (mapa, globo, país/estado clicável, dados do IBGE), siga `anim3d-mapas`. Para topologia de rede, editor de dispositivos/cabos ou simulação de pacotes, siga `anim3d-topologia`.
+
+Em qualquer visual novo, aplique **antes do código** `anim3d-estilos` (fixa o estilo) e `anim3d-motion` (fixa o movimento).
 
 Sempre aplique também: `anim3d-fundamentos` (base da cena), `anim3d-performance-a11y` (orçamento, fallback, movimento reduzido) e `anim3d-assets` (se houver modelo `.glb`).
 

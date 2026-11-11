@@ -7,6 +7,9 @@ import { Globo3D } from '../anim3d-saas/exemplo/Globo3D';
 import { Ecossistema3D } from '../anim3d-dashboard/exemplo/Ecossistema3D';
 import { ecossistemaExemplo } from '../anim3d-dashboard/exemplo/ecossistemaDados';
 import { Colunas3D } from '../anim3d-dashboard/exemplo/Colunas3D';
+import { CentroComando3D } from '../anim3d-mapas/exemplo/CentroComando3D';
+import { Topologia } from '../anim3d-topologia/exemplo/Topologia';
+import { ComparaMolas } from '../anim3d-motion/exemplo/ComparaMolas';
 import { Celular3D } from '../anim3d-mobile/exemplo/Celular3D';
 import { MicroInteracoes } from '../anim3d-app-ui/exemplo/MicroInteracoes';
 import imgAlmoxarifado from '../docs/img/almoxarifado-visao-geral.png';
@@ -14,7 +17,7 @@ import './galeria.css';
 
 interface Exemplo {
   id: string;
-  grupo: 'SaaS' | 'Dashboard' | 'Mobile' | 'App UI';
+  grupo: 'Mapas' | 'Redes' | 'Motion' | 'SaaS' | 'Dashboard' | 'Mobile' | 'App UI';
   icone: string;
   titulo: string;
   resumo: string;
@@ -64,7 +67,7 @@ function Almoxarifado() {
   return (
     <div className="gal-destaque">
       <img src={imgAlmoxarifado} alt="Almoxarifado 3D: estantes, setores, empilhadeiras, caminhões e painel com gráficos" />
-      <a className="gal-btn ativo" href="./index.html">
+      <a className="gal-btn ativo" href="./almoxarifado.html">
         Abrir o Almoxarifado 3D →
       </a>
     </div>
@@ -111,6 +114,98 @@ import { ecossistemaExemplo } from './ecossistemaDados';
     prop: 4 / 3,
     legenda: 'Passe o mouse nos sistemas',
     palco: () => <Ecossistema3D dados={ecossistemaExemplo} />,
+  },
+  {
+    id: 'comando',
+    grupo: 'Mapas',
+    icone: '◉',
+    titulo: 'Centro de Comando (mapa e globo)',
+    resumo: 'Mapa plano ou globo, países clicáveis',
+    descricao:
+      'Mapa-múndi de sala de controle em duas formas, com botão para alternar: plano (padrão: o mundo inteiro legível de uma vez) e globo (vitrine). Países reais, fronteiras e nomes em português. Clique em qualquer país: o mapa centraliza nele, destaca o território, acende os data centers do país (hubs por cidade) e o painel da direita mostra população, área, capital, idiomas, moeda, fronteiras (clicáveis) e a lista de data centers. No Brasil, um botão abre o mapa por estado com dados do IBGE. Arcos de ataque (por severidade) e fluxos de dados entre 16 cidades, ondas de impacto, feixes nos alvos e campanhas em rajada. Clicar numa cidade abre estado, taxa de bloqueio e gráfico dos últimos 60 s. Os eventos vêm de uma simulação testável, trocável por dados reais.',
+    tecnicas: ['camada de data centers por país', 'plano e globo com os mesmos dados', 'arco direto no plano e geodésico no globo', 'mapa real (Natural Earth) em CanvasTexture', 'rótulos de países em HTML', 'simulação pura (sem three)', 'Line + vertex colors + setDrawRange', 'Points aditivo (cabeças)', 'pools de arcos e ondas', 'raycast com e.delta', 'projeção 3D→HTML por ref', 'container queries'],
+    destaques: ['Plano: arraste para deslizar; globo: arraste para girar; + e − dão zoom', 'Esc e clique no vazio fecham o painel', 'Tudo que é texto fica em HTML, fora do canvas', 'Movimento reduzido: sem rotação, ritmo menor, arcos estáticos'],
+    metricas: [['16', 'pontos clicáveis'], ['28', 'arcos simultâneos'], ['3×/s', 'atualização do HUD'], ['26', 'testes (simulação, mapa, IBGE, data centers)']],
+    skill: 'anim3d-mapas',
+    arquivos: ['anim3d-mapas/exemplo/CentroComando3D.tsx', 'anim3d-mapas/exemplo/CentroComando3DCena.tsx', 'anim3d-mapas/exemplo/CentroComandoHud.tsx', 'anim3d-mapas/exemplo/centroComandoSim.ts', 'anim3d-mapas/exemplo/mapaMundi.ts', 'anim3d-mapas/exemplo/mapaPaises.ts', 'anim3d-mapas/exemplo/datacenters.ts', 'anim3d-mapas/exemplo/paisesInfo.ts', 'anim3d-mapas/exemplo/MapaBrasil.tsx', 'anim3d-mapas/exemplo/ibgeBrasil.ts', 'anim3d-mapas/exemplo/dados/ (paises.json, ibge-brasil.json, gerar-dados.mjs)', 'anim3d-mapas/exemplo/centroComando.css'],
+    uso: `import { CentroComando3D } from './CentroComando3D';
+
+// padrão: mapa plano; o usuário alterna para o globo no botão do topo
+<CentroComando3D rotulo="Ameaças em tempo real" />
+<CentroComando3D projecaoInicial="globo" />
+
+// dados reais: troque o avancar(sim, dt) da cena por
+// os seus eventos { tipo, origem, destino, vetor, severidade, bloqueado }`,
+    prop: 1.6,
+    palco: () => <CentroComando3D />,
+  },
+  {
+    id: 'brasil',
+    grupo: 'Mapas',
+    icone: '◈',
+    titulo: 'Mapa do Brasil (IBGE)',
+    resumo: 'Estados clicáveis com indicadores oficiais',
+    descricao:
+      'Mapa coroplético por estado com dados oficiais do IBGE: população e área (Censo 2022), densidade, PIB e PIB per capita (Contas Regionais) e número de municípios. Troque o indicador e o mapa recolore com transição; clique num estado para ver o painel com posição no ranking nacional. Os dados ficam num snapshot local (gerar-dados.mjs atualiza), então funciona offline.',
+    tecnicas: ['SVG por estado (malha do IBGE)', 'escala log/linear sequencial', 'projeção com correção de latitude', 'foco e teclado por estado', 'lazy load dos dados'],
+    destaques: ['Esc fecha o painel e depois volta ao mundo', 'Mesmo estilo do globo (abre pelo botão no Brasil)', 'Fonte e ano de cada indicador visíveis', 'Pronto para trocar por municípios'],
+    metricas: [['27', 'estados'], ['5.571', 'municípios'], ['5', 'indicadores'], ['203 mi', 'habitantes (2022)']],
+    skill: 'anim3d-mapas',
+    arquivos: ['anim3d-mapas/exemplo/MapaBrasil.tsx', 'anim3d-mapas/exemplo/ibgeBrasil.ts', 'anim3d-mapas/exemplo/dados/ibge-brasil.json', 'anim3d-mapas/exemplo/dados/gerar-dados.mjs'],
+    uso: `import { CentroComando3D } from './CentroComando3D';
+
+// abre direto no mapa do Brasil
+<CentroComando3D vistaInicial="brasil" />`,
+    prop: 1.6,
+    palco: () => <CentroComando3D vistaInicial="brasil" />,
+  },
+  {
+    id: 'topologia',
+    grupo: 'Redes',
+    icone: '⌬',
+    titulo: 'Topologia de rede 3D (estilo Packet Tracer)',
+    resumo: 'Rede em 3D, pacote animado e depuração',
+    descricao:
+      'Editor de topologia em 3D (com vista 2D de reserva): dispositivos modelados em camadas de altura, cabos que acendem na cor do protocolo, pacote com rastro e estouro no ponto de descarte. Adicione roteadores, switches, firewalls, servidores e computadores, arraste, ligue cabos e derrube enlaces. Envie um pacote (ICMP, HTTP, SSH, DNS) e veja-o percorrer a rota de menor latência. No modo depurar você avança salto a salto e vê onde e por que o pacote foi entregue ou descartado: dispositivo desligado, enlace caído, regra de firewall ou rede sem rota. O motor roda e é testado em Node.',
+    tecnicas: ['modelos 3D procedurais (sem .glb)', 'camadas em altura', 'pacote com rastro por Points', 'tráfego de fundo em partículas', 'câmera orbital própria e enquadramento automático', 'SVG 2D como fallback', 'Dijkstra por latência', 'rastreio salto a salto', 'pacote animado por ref + rAF', 'pointer capture para arrastar', 'teclado: setas movem, Delete remove'],
+    destaques: ['O resultado é um objeto de dados (passos com motivo)', 'Qualquer edição invalida o rastreio anterior', 'Avisos: IP duplicado e dispositivo isolado', 'Copiar e carregar a topologia como JSON'],
+    metricas: [['6', 'tipos de dispositivo'], ['4', 'protocolos'], ['4', 'motivos de descarte'], ['10', 'testes do motor']],
+    skill: 'anim3d-topologia',
+    arquivos: ['anim3d-topologia/exemplo/Topologia.tsx', 'anim3d-topologia/exemplo/Topologia3DCena.tsx', 'anim3d-topologia/exemplo/topologiaSim.ts', 'anim3d-topologia/exemplo/topologia.css'],
+    uso: `import { Topologia } from './Topologia';
+import { tracar } from './topologiaSim';
+
+<Topologia />
+
+// só o motor (sem tela): rastreia um pacote
+const r = tracar(topologia, 'pc1', 'srv1', 'http');
+// r.status, r.rota, r.passos[].motivo`,
+    prop: 1.5,
+    palco: () => (
+      <div style={{ aspectRatio: '3 / 2', width: '100%' }}>
+        <Topologia />
+      </div>
+    ),
+  },
+  {
+    id: 'molas',
+    grupo: 'Motion',
+    icone: '〰',
+    titulo: 'Mola × curva fixa',
+    resumo: 'Por que interrupção pede mola',
+    descricao:
+      'Cinco molas e uma curva fixa seguem o mesmo alvo. Clique em "Alternar alvo" várias vezes, no meio do movimento: as molas continuam a velocidade e mudam de direção com naturalidade; a curva fixa é reiniciada e "para e arranca". Os gráficos mostram a trajetória de cada preset, o regime (ζ) e o tempo real de assentamento, calculados pelo motor. A mola é analítica: o resultado não depende do FPS.',
+    tecnicas: ['mola amortecida analítica', 'independente do FPS', 'continuidade de velocidade', 'regime por ζ', 'rAF com refs (sem estado por quadro)'],
+    destaques: ['Sem WebGL e sem dependências', 'Movimento reduzido: vai direto ao alvo', 'Motor testado em Node (14 testes)', 'Presets com personalidade documentada'],
+    metricas: [['5', 'presets de mola'], ['14', 'testes do motor'], ['exata', 'independe do FPS'], ['0', 'dependências novas']],
+    skill: 'anim3d-motion',
+    arquivos: ['anim3d-motion/exemplo/ComparaMolas.tsx', 'anim3d-motion/motor/mola.ts', 'anim3d-motion/motor/linha.ts'],
+    uso: `import { MOLAS, passoMola } from './motor/mola';
+
+// a cada quadro (delta em segundos), sem estado do React:
+estado = passoMola(MOLAS.padrao, estado, alvo, Math.min(delta, 0.1));
+// estado.x é a posição; troque o alvo a qualquer momento: a velocidade continua`,
+    palco: () => <ComparaMolas />,
   },
   {
     id: 'colunas',
@@ -196,12 +291,14 @@ import { ecossistemaExemplo } from './ecossistemaDados';
   },
 ];
 
-const GRUPOS: Exemplo['grupo'][] = ['Dashboard', 'SaaS', 'Mobile', 'App UI'];
+const GRUPOS: Exemplo['grupo'][] = ['Mapas', 'Redes', 'Motion', 'Dashboard', 'SaaS', 'Mobile', 'App UI'];
+/** Exemplo exibido quando a URL não traz #id (página principal). */
+const INICIAL = 'comando';
 
 // ---------- rota pelo hash ----------
 const lerHash = () => {
   const h = location.hash.slice(1);
-  return EXEMPLOS.some((e) => e.id === h) ? h : EXEMPLOS[0].id;
+  return EXEMPLOS.some((e) => e.id === h) ? h : INICIAL;
 };
 const assinarHash = (cb: () => void) => {
   window.addEventListener('hashchange', cb);
@@ -230,7 +327,7 @@ function Codigo({ texto }: { texto: string }) {
 }
 
 function Galeria() {
-  const id = useSyncExternalStore(assinarHash, lerHash, () => EXEMPLOS[0].id);
+  const id = useSyncExternalStore(assinarHash, lerHash, () => INICIAL);
   const ex = EXEMPLOS.find((e) => e.id === id)!;
   const [menu, setMenu] = useState(false);
   const reduzido = useMovimentoReduzido();

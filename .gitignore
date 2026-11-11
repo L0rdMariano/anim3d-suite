@@ -1,4 +1,6 @@
 node_modules/
+# derivado do world-countries (ODbL 1.0): gerado localmente por `npm run dados`, nunca versionado
+anim3d-mapas/exemplo/dados/paises.json
 dist/
 .vite/
 capturas/

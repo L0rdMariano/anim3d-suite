@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="escuro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Almoxarifado 3D</title>
+    <style>
+      :root {
+        --cor-primaria: #818cf8; --cor-destaque: #fb923c; --cor-sucesso: #4ade80;
+        --cor-plataforma: #141a2c; --cor-bloco: #2a3150; --cor-rack: #3b5bdb;
+      }
+      html, body { margin: 0; height: 100%; background: #070a14; }
+    </style>
+  </head>
+  <body>
+    <script>
+      // Só na demo: por padrão ignora o "reduzir movimento" do sistema. Use ?respeitar=1 para testar o comportamento real.
+      if (!new URLSearchParams(location.search).has('respeitar')) {
+        const original = window.matchMedia.bind(window);
+        window.matchMedia = (q) => original(q.includes('prefers-reduced-motion: reduce') ? '(max-width: 0px)' : q);
+      }
+    </script>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

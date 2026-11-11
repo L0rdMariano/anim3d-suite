@@ -78,3 +78,7 @@ O desenho é **dado, não código**. A cena recebe `{ nos, arestas, valores }`; 
 - [ ] Números exatos em HTML acessível
 - [ ] Atualização por `ref` + `invalidate`, sem re-render por tick
 - [ ] Fallback 2D completo
+
+## Mapas e globos
+
+Mapa-múndi 3D, globo com fluxos/ataques, mapa por estado (IBGE), centro de comando: use a skill `anim3d-mapas`.

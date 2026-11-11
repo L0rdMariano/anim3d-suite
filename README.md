@@ -57,15 +57,15 @@ Requisito: **Node.js 22+**.
 git clone https://github.com/L0rdMariano/anim3d-suite.git anim3d-suite
 cd anim3d-suite
 npm install
-npm run demo          # abre http://localhost:5180/
+npm run demo          # abre a galeria em http://localhost:5180/
 ```
 
 No Windows também dá para clicar duas vezes em `iniciar-demo.cmd`.
 
 | Página | Conteúdo |
 |---|---|
-| `http://localhost:5180/` | Almoxarifado 3D (app de tela cheia) |
-| `http://localhost:5180/galeria.html` | Galeria: um exemplo por vez, com o código de uso para copiar. Link direto: `#globo`, `#celular`… |
+| `http://localhost:5180/` | **Galeria de exemplos** (página principal): um exemplo por vez, com o código de uso para copiar. Link direto: `#comando`, `#brasil`, `#globo`, `#celular`… |
+| `http://localhost:5180/almoxarifado.html` | Almoxarifado 3D (app de tela cheia) |
 
 > **Sobre "reduzir movimento":** a suíte respeita essa preferência do sistema (padrão ligado em Windows Server e VMs), mostrando versões estáticas. Como a demo existe para mostrar animação, **ela ignora a preferência por padrão**. Para ver como fica para quem usa "reduzir movimento", acrescente `?respeitar=1` à URL (ou use o botão no topo da galeria).
 >
@@ -144,8 +144,8 @@ export default function MinhaCena({ aoFalhar, movimentoReduzido, ...dados }: Dad
 ## Qualidade
 
 ```bash
-npm run verificar     # typecheck strict + 29 testes (kit + simulação do almoxarifado)
-node anim3d-performance-a11y/scripts/verificar-navegador.mjs http://localhost:5180/ --larguras 1856,1440,768,390
+npm run verificar     # typecheck strict + testes (kit, simulações, dados, motor de movimento) + validador do padrão de skills
+node anim3d-performance-a11y/scripts/verificar-navegador.mjs http://localhost:5180/almoxarifado.html --larguras 1856,1440,768,390
 ```
 
 O verificador abre um Chrome headless via DevTools Protocol, sem dependências. Ele captura PNGs por largura e falha se houver rolagem horizontal, erro de console ou tabela "invisível" esticando a página. Há também evals das skills em [`anim3d-roteador/evals/`](anim3d-roteador/evals/), rodáveis com `claude plugin eval`.
@@ -158,13 +158,21 @@ anim3d-suite/
 ├── anim3d-fundamentos/       SKILL.md + kit/ (src, testes, README)
 ├── anim3d-saas/              SKILL.md + exemplo/ (globo)
 ├── anim3d-dashboard/         SKILL.md + exemplo/ (almoxarifado/, ecossistema, colunas)
+├── anim3d-mapas/             SKILL.md + exemplo/ (centro de comando, globo com países, mapa do Brasil/IBGE, dados/)
+├── anim3d-estilos/           SKILL.md + references/ (fichas de estilo: composição, luz, material, câmera, movimento, custo)
+├── anim3d-motion/            SKILL.md + references/ + motor/ (mola analítica, linha do tempo, testados) + exemplo/
+├── anim3d-topologia/         SKILL.md + exemplo/ (editor de topologia de rede em 3D com vista 2D, pacote animado com rastro, modo depurar)
 ├── anim3d-mobile/            SKILL.md + exemplo/ (celular)
 ├── anim3d-app-ui/            SKILL.md + exemplo/ (micro-interações)
 ├── anim3d-performance-a11y/  SKILL.md + scripts/verificar-navegador.mjs
 ├── anim3d-assets/            SKILL.md
-├── demo/                     almoxarifado (index.html) e galeria (galeria.html)
+├── demo/                     galeria (index.html, página principal) e almoxarifado (almoxarifado.html)
 └── docs/img/                 capturas usadas neste README
 ```
+
+## Dados de terceiros
+
+Os dados de países (nomes, capitais, idiomas, moedas, fronteiras) vêm de uma base com licença **ODbL** e por isso o arquivo derivado `paises.json` **não é versionado**: é gerado localmente. Você não precisa fazer nada: `npm test` e `npm run demo` geram uma versão mínima, sem rede. Para incluir a população (Banco Mundial), rode `npm run dados` com internet. Detalhes e atribuições em [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Quer ajudar?
 

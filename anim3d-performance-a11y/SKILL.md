@@ -30,7 +30,7 @@ Já implementado e testado: `Cena3DSegura` do kit (`../anim3d-fundamentos/kit/`)
 
 ## 3. Degradação adaptativa
 
-Meça FPS médio em janela de ~1–2 s. Abaixo de ~45 FPS: degrau 1 → `dpr` 1; degrau 2 → desliga sombras; degrau 3 → animação reduzida; degrau 4 → fallback estático (`aoFalhar()`). Nunca volte a subir (histerese). Pronto no kit: `<MonitorQualidade aoMudar={n => n >= 4 ? aoFalhar() : setNivel(n)} />` (lógica pura em `criarMedidorQualidade`, que também serve em React Native). Só mede com `frameloop="always"`. Em `"demand"` o componente fica inerte de propósito, porque as pausas entre quadros pareceriam FPS baixo. Nesse modo, alimente `criarMedidorQualidade` só durante sequências contínuas.
+Meça FPS médio em janela de ~1–2 s. Abaixo de ~45 FPS: degrau 1 → `dpr` 1; degrau 2 → desliga sombras; degrau 3 → animação reduzida; degrau 4 → fallback estático (`aoFalhar()`) **só em cena decorativa**. Em **ferramenta** (mapa, centro de comando, gêmeo digital) nunca caia para o poster por FPS: a animação "começa e para" e o usuário perde a ferramenta. Use `alvo={24} maxNivel={3}`, deixe cada degrau cortar custo (dpr, rótulos, órbitas) e reserve o fallback para perda de contexto WebGL ou erro (veja `anim3d-mapas`). Nunca volte a subir (histerese). Pronto no kit: `<MonitorQualidade aoMudar={n => n >= 4 ? aoFalhar() : setNivel(n)} />` (lógica pura em `criarMedidorQualidade`, que também serve em React Native). Só mede com `frameloop="always"`. Em `"demand"` o componente fica inerte de propósito, porque as pausas entre quadros pareceriam FPS baixo. Nesse modo, alimente `criarMedidorQualidade` só durante sequências contínuas.
 
 ## 2b. Bundle
 
